@@ -42,7 +42,16 @@
         </div>
     </div>
     <div class="container footer-bottom">
-        <span>© <?= date('Y') ?> <?= e(COMPANY_NAME) ?> · NIF <?= e(COMPANY_NIF) ?> · <?= e(COMPANY_ADDRESS) ?><?= COMPANY_REGISTRY !== '' ? ' · ' . e(COMPANY_REGISTRY) : '' ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
+        <?php
+        // Solo se muestran los datos que estén completos en config.php
+        $footerBits = array_filter([
+            '© ' . date('Y') . ' ' . COMPANY_NAME,
+            COMPANY_NIF !== '' ? 'NIF ' . COMPANY_NIF : '',
+            COMPANY_ADDRESS,
+            COMPANY_REGISTRY,
+        ], 'strlen');
+        ?>
+        <span><?= e(implode(' · ', $footerBits)) ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
         <span class="footer-legal">
             <a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a>
             <a href="<?= e(url('legal.php#privacidad')) ?>">Privacidad</a>

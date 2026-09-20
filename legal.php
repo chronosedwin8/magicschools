@@ -14,12 +14,14 @@ include __DIR__ . '/includes/partials/nav.php';
         <p>En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y de Comercio Electrónico (LSSI-CE), se informa:</p>
         <ul>
             <li><strong>Titular:</strong> <?= e(COMPANY_NAME) ?></li>
-            <li><strong>NIF:</strong> <?= e(COMPANY_NIF) ?></li>
-            <li><strong>Domicilio:</strong> <?= e(COMPANY_ADDRESS) ?></li>
+            <?php if (COMPANY_NIF !== ''): ?><li><strong>NIF:</strong> <?= e(COMPANY_NIF) ?></li><?php endif; ?>
+            <?php if (COMPANY_ADDRESS !== ''): ?><li><strong>Domicilio:</strong> <?= e(COMPANY_ADDRESS) ?></li><?php endif; ?>
             <?php if (COMPANY_REGISTRY !== ''): ?><li><strong>Datos registrales:</strong> <?= e(COMPANY_REGISTRY) ?></li><?php endif; ?>
             <li><strong>Correo electrónico:</strong> <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a></li>
             <li><strong>Sitio web:</strong> <?= e(base_url()) ?></li>
+            <li><strong>Actividad:</strong> venta de licencias exclusivamente en línea, sin establecimiento abierto al público.</li>
         </ul>
+        <p>Para cualquier comunicación, reclamación o ejercicio de derechos, el canal de contacto es <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a>.</p>
 
         <h2 id="comercio">Comercio electrónico internacional y condiciones de compra</h2>
         <p><?= e(COMPANY_NAME) ?> es una empresa establecida en <?= e(COMPANY_COUNTRY) ?> que comercializa licencias de <?= e(BRAND_NAME) ?> exclusivamente en línea, a instituciones y clientes de distintos países.</p>
