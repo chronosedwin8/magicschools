@@ -51,7 +51,7 @@
             COMPANY_REGISTRY,
         ], 'strlen');
         ?>
-        <span><?= e(implode(' · ', $footerBits)) ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
+        <span><?= e(rtrim(implode(' · ', $footerBits), '.')) ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
         <span class="footer-legal">
             <a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a>
             <a href="<?= e(url('legal.php#privacidad')) ?>">Privacidad</a>
