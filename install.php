@@ -7,6 +7,12 @@
 require_once __DIR__ . '/config.php';
 
 $cli = PHP_SAPI === 'cli';
+
+// En producción el instalador solo se ejecuta por consola (php install.php)
+if (!$cli && IS_PRODUCTION) {
+    http_response_code(403);
+    exit('No disponible.');
+}
 $out = [];
 
 try {
