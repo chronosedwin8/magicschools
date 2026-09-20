@@ -1,0 +1,14 @@
+# Credenciales y datos locales: nunca deben subir al repositorio
+config.php
+
+# Datos generados en tiempo de ejecución
+storage/logs/
+storage/*.json
+storage/cacert.pem
+
+# Sistema / editores
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
