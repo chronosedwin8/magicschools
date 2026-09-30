@@ -19,8 +19,6 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/helpers.php';
 require_once __DIR__ . '/auth.php';
-require_once __DIR__ . '/mercadopago.php';
-require_once __DIR__ . '/mp_checkout.php';
 require_once __DIR__ . '/licenses.php';
 require_once __DIR__ . '/plans.php';
 

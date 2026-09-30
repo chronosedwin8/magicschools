@@ -205,3 +205,9 @@ body.portal { background: var(--bg-soft); }
 .price-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .85rem; color: var(--ink-2); }
 .plan-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
 @media (max-width: 520px) { .plans-admin { grid-template-columns: 1fr; } }
+
+/* Link de pago en el panel de precios */
+.link-input { background: #FFF8E6; border: 1px solid #FDE7B0; border-radius: 16px; padding: 16px; margin-bottom: 18px; }
+.link-input label { margin-bottom: 8px; }
+.link-input input { font-family: ui-monospace, Consolas, monospace; font-size: .9rem; }
+.link-input .price-meta { margin-top: 4px; }

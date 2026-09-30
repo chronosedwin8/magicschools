@@ -66,23 +66,7 @@ if (is_post()) {
         clear_old();
         $order = create_order((int) $user['id'], $selected);
 
-        if (mp_enabled() && MP_CHECKOUT_MODE === 'custom') {
-            redirect('pago/pagar.php?ref=' . urlencode($order['reference']));
-        } elseif (mp_enabled()) {
-            try {
-                $pref = mp_create_preference($order, $user, $selected);
-                db_exec('UPDATE orders SET mp_preference_id = ?, updated_at = NOW() WHERE id = ?', [$pref['id'], $order['id']]);
-                redirect($pref['init_url']);
-            } catch (Throwable $e) {
-                app_log('mercadopago', 'No se pudo crear la preferencia', ['order' => $order['reference'], 'error' => $e->getMessage()]);
-                $errors[] = 'No pudimos iniciar el pago con Mercado Pago. Inténtalo de nuevo en unos minutos.'
-                    . (APP_DEBUG ? ' (' . $e->getMessage() . ')' : '');
-            }
-        } elseif (mp_demo()) {
-            redirect('pago/simulador.php?ref=' . urlencode($order['reference']));
-        } else {
-            $errors[] = 'Los pagos no están configurados todavía. Contáctanos a ' . SUPPORT_EMAIL . '.';
-        }
+        redirect('pago/pagar.php?ref=' . urlencode($order['reference']));
     }
 }
 
@@ -100,9 +84,6 @@ include __DIR__ . '/includes/partials/nav.php';
                 <h2>Completa tu compra</h2>
                 <p class="muted">Crea tu cuenta del portal de clientes. Con ella administrarás tu licencia y tus usuarios.</p>
 
-                <?php if (mp_demo()): ?>
-                    <div class="demo-banner"><strong>Modo demostración:</strong> aún no hay credenciales de Mercado Pago configuradas; el pago se simulará localmente.</div>
-                <?php endif; ?>
                 <?php foreach ($errors as $err): ?><div class="alert alert-error"><?= e($err) ?></div><?php endforeach; ?>
                 <?= render_flashes() ?>
 

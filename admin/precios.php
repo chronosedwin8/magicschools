@@ -49,8 +49,8 @@ include __DIR__ . '/../portal/_top.php';
             'seats' => (int) ($_POST['seats'] ?? 0), 'months' => (int) ($_POST['months'] ?? 0),
             'featured' => !empty($_POST['featured']),
             'features' => preg_split('/\r\n|\r|\n/', (string) ($_POST['features'] ?? '')),
+            'payment_link' => $_POST['payment_link'] ?? '',
         ]) : $p;
-        $efecty = mp_enabled() ? mp_method_allows('efecty', (float) $v['price']) : null;
     ?>
     <form class="panel plan-edit" method="post">
         <?= csrf_field() ?>
@@ -72,12 +72,23 @@ include __DIR__ . '/../portal/_top.php';
             <div class="price-meta">
                 <span>Por usuario: <strong id="per-<?= e($code) ?>"><?= e(money_short($v['seats'] > 0 ? round($v['price'] / $v['seats']) : 0)) ?></strong></span>
                 <span>Precio original: <?= e(money_short($d['price'])) ?></span>
-                <?php if ($efecty !== null): ?>
-                    <span><?= $efecty ? '✅ Admite Efecty' : '⚠️ Supera el máximo de Efecty (solo tarjeta y PSE)' ?></span>
-                <?php endif; ?>
                 <?php if (!empty($pendingByPlan[$code])): ?>
                     <span>⏳ <?= (int) $pendingByPlan[$code] ?> pedido(s) pendiente(s) con el precio anterior</span>
                 <?php endif; ?>
+            </div>
+        </div>
+
+        <div class="link-input">
+            <label>Link de pago de <?= e(PAYMENT_PROVIDER) ?>
+                <span class="field-hint">— es el botón que ve el cliente para pagar este plan</span>
+                <input name="payment_link" type="url" required maxlength="500" inputmode="url"
+                       value="<?= e((string) ($v['payment_link'] ?? '')) ?>" placeholder="https://mpago.li/xxxxxxx">
+            </label>
+            <div class="price-meta">
+                <?php if (!empty($v['payment_link'])): ?>
+                    <a href="<?= e($v['payment_link']) ?>" target="_blank" rel="noopener">Probar el link ↗</a>
+                <?php endif; ?>
+                <span>Recuerda que el valor del link debe coincidir con el precio de arriba.</span>
             </div>
         </div>
 

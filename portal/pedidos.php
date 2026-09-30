@@ -23,7 +23,7 @@ include __DIR__ . '/_top.php';
 <div class="page-head">
     <div>
         <h1>Pedidos y pagos</h1>
-        <p class="muted">Historial de compras realizadas con Mercado Pago.</p>
+        <p class="muted">Historial de tus compras y su estado.</p>
     </div>
 </div>
 
@@ -34,7 +34,7 @@ include __DIR__ . '/_top.php';
     <?php else: ?>
         <div class="table-wrap">
             <table class="table">
-                <thead><tr><th>Orden</th><th>Plan</th><th>Fecha</th><th>Valor</th><th>Estado</th><th>Pago MP</th><th></th></tr></thead>
+                <thead><tr><th>Orden</th><th>Plan</th><th>Fecha</th><th>Valor</th><th>Estado</th><th>Referencia de pago</th><th></th></tr></thead>
                 <tbody>
                 <?php foreach ($orders as $o): [$lbl, $cls] = $statusMap[$o['status']] ?? [$o['status'], 'muted']; ?>
                     <tr>
@@ -47,15 +47,12 @@ include __DIR__ . '/_top.php';
                         <td class="row-actions">
                             <?php if ($o['license_id']): ?>
                                 <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Ver licencia</a>
-                            <?php elseif (in_array($o['status'], ['rejected', 'cancelled', 'pending'], true)): ?>
-                                <?php if ($o['status'] === 'pending' && $o['payment_url']): ?>
-                                    <a class="btn btn-outline btn-sm" href="<?= e(url('pago/resultado.php?ref=' . urlencode($o['reference']))) ?>"><?= $o['payment_method'] === 'efecty' ? 'Ver cupón' : 'Ver estado' ?></a>
-                                <?php endif; ?>
-                                <?php if ($o['status'] === 'cancelled'): ?>
-                                    <a class="btn btn-primary btn-sm" href="<?= e(url('checkout.php?plan=' . $o['plan_code'])) ?>">Comprar de nuevo</a>
-                                <?php else: ?>
-                                    <a class="btn btn-primary btn-sm" href="<?= e(url('pago/pagar.php?ref=' . urlencode($o['reference']))) ?>">Pagar</a>
-                                <?php endif; ?>
+                            <?php elseif ($o['status'] === 'review'): ?>
+                                <a class="btn btn-outline btn-sm" href="<?= e(url('pago/resultado.php?ref=' . urlencode($o['reference']))) ?>">Ver estado</a>
+                            <?php elseif ($o['status'] === 'cancelled'): ?>
+                                <a class="btn btn-primary btn-sm" href="<?= e(url('checkout.php?plan=' . $o['plan_code'])) ?>">Comprar de nuevo</a>
+                            <?php elseif (in_array($o['status'], ['rejected', 'pending'], true)): ?>
+                                <a class="btn btn-primary btn-sm" href="<?= e(url('pago/pagar.php?ref=' . urlencode($o['reference']))) ?>">Ir al link de pago</a>
                             <?php endif; ?>
                         </td>
                     </tr>

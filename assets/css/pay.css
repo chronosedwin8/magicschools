@@ -79,3 +79,11 @@ select:disabled { background: var(--bg-soft); color: var(--muted); }
     .cp-number { font-size: 1.05rem; margin-top: 26px; }
     .method-tabs { grid-template-columns: 1fr; }
 }
+
+/* Pago por link */
+.pay-steps { counter-reset: p; list-style: none; padding: 0; margin: 22px 0 26px; }
+.pay-steps li { counter-increment: p; position: relative; padding: 0 0 0 44px; margin-bottom: 14px; color: var(--ink-2); }
+.pay-steps li::before { content: counter(p); position: absolute; left: 0; top: -2px; width: 30px; height: 30px; border-radius: 50%; background: var(--primary-50); color: var(--primary); font-weight: 800; font-family: var(--font-head); display: grid; place-items: center; }
+.pay-link-btn { font-size: 1.1rem; padding: 18px 28px; }
+.paid-form { margin-top: 30px; padding-top: 24px; border-top: 1px dashed var(--line); }
+.paid-form h2 { font-size: 1.15rem; margin-bottom: 2px; }

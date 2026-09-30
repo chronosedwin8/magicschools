@@ -46,7 +46,8 @@ include __DIR__ . '/../portal/_top.php';
         <?php foreach ($byPlan as $p): ?>
             <div class="summary-row"><span><?= e($p['plan_name']) ?> <small class="muted">(<?= (int) $p['n'] ?>)</small></span><strong><?= e(money_short($p['total'])) ?></strong></div>
         <?php endforeach; ?>
-        <p class="muted small mt-24">Mercado Pago: <?= mp_enabled() ? (MP_SANDBOX ? 'modo pruebas' : '<strong>producción</strong>') : 'sin credenciales' ?> · Webhook: <?= MP_WEBHOOK_SECRET !== '' ? 'firma validada' : 'sin clave' ?></p>
+        <p class="muted small mt-24">Cobro con links de pago de <?= e(PAYMENT_PROVIDER) ?>.
+            Los pedidos se activan al confirmar el pago en <a href="<?= e(url('admin/pedidos.php')) ?>">Pedidos y pagos</a>.</p>
     </section>
     <section class="panel panel-wide">
         <div class="panel-head"><h2>Pedidos recientes</h2><a class="btn btn-outline btn-sm" href="<?= e(url('admin/pedidos.php')) ?>">Ver todos</a></div>

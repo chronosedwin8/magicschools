@@ -150,7 +150,7 @@ include __DIR__ . '/../portal/_top.php';
                             <form method="post" class="pop"><?= csrf_field() . admin_qs_field() ?>
                                 <input type="hidden" name="user_id" value="<?= (int) $u['id'] ?>">
                                 <input type="hidden" name="action" value="license">
-                                <p class="small">Crea una orden aprobada y su licencia, sin cobro en Mercado Pago.</p>
+                                <p class="small">Crea una orden ya aprobada y su licencia, sin pasar por el link de pago.</p>
                                 <label>Plan<select name="plan"><?php foreach ($PLANS as $p): ?><option value="<?= e($p['code']) ?>"><?= e($p['name']) ?> (<?= money_short($p['price']) ?>)</option><?php endforeach; ?></select></label>
                                 <label>Nota<input name="note" maxlength="80" placeholder="Transferencia, cortesía…"></label>
                                 <button class="btn btn-primary btn-sm btn-block">Asignar</button>

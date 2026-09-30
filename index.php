@@ -21,8 +21,8 @@ $tools = [
 
 $faqs = [
     ['¿Qué incluye la licencia institucional?', 'Acceso a toda la plataforma para el número de usuarios de tu plan durante 12 meses: herramientas para docentes, espacios para estudiantes, panel de administración, capacitación inicial y soporte.'],
-    ['¿Cómo se realiza el pago?', 'El pago se procesa de forma segura a través de Mercado Pago. Puedes pagar con tarjeta de crédito o débito, PSE, Efecty y otros medios disponibles en Colombia. Recibes la confirmación de inmediato.'],
-    ['¿Qué pasa después de pagar?', 'Serás redirigido automáticamente a tu portal de clientes, donde verás tu licencia, su código, el número de cupos y la vigencia. Desde allí puedes agregar a los docentes y directivos que usarán la licencia.'],
+    ['¿Cómo se realiza el pago?', 'Al elegir tu plan te damos un link de pago seguro de ' . PAYMENT_PROVIDER . '. Desde ahí pagas con tarjeta de crédito o débito, PSE, efectivo y otros medios disponibles en Colombia.'],
+    ['¿Qué pasa después de pagar?', 'Nos avisas desde la misma pantalla y verificamos el pago. Al confirmarlo activamos tu licencia, normalmente el mismo día hábil: en tu portal de clientes verás el código, los cupos y la vigencia, y podrás agregar a tus docentes y directivos.'],
     ['¿Puedo cambiar los usuarios de la licencia?', 'Sí. Desde el portal puedes agregar, retirar o reemplazar usuarios en cualquier momento, siempre dentro del número de cupos de tu plan.'],
     ['¿Cuál es la diferencia entre Licencia Escuela y Licencia por Volumen?', 'La Licencia Escuela está pensada para una sola institución. La Licencia por Volumen agrega más cupos, soporte para varias sedes, reportes por sede, formación ampliada y un gerente de cuenta dedicado.'],
     ['¿Desde dónde se realiza la venta?', 'Somos una empresa establecida en ' . COMPANY_COUNTRY . ' y vendemos en línea bajo la normativa española de comercio electrónico (LSSI-CE). El precio publicado es el valor total que cobramos, sin cargos adicionales al pagar. Los tributos o retenciones que, en su caso, correspondan en el país del comprador se rigen por la legislación de ese país.'],
@@ -59,7 +59,7 @@ include __DIR__ . '/includes/partials/nav.php';
                 </div>
                 <ul class="hero-checks">
                     <li>Más de 80 herramientas</li>
-                    <li>Pago seguro con Mercado Pago</li>
+                    <li>Pago seguro con <?= e(PAYMENT_PROVIDER) ?></li>
                     <li>Activación inmediata</li>
                 </ul>
             </div>
@@ -220,8 +220,8 @@ include __DIR__ . '/includes/partials/nav.php';
                 <h2>De la compra al aula en <span class="text-gradient-light">tres pasos</span></h2>
             </div>
             <ol class="steps">
-                <li class="step reveal"><span class="step-n">1</span><h3>Elige y paga tu licencia</h3><p>Selecciona el plan ideal y paga de forma segura con Mercado Pago: tarjeta, PSE o efectivo.</p></li>
-                <li class="step reveal"><span class="step-n">2</span><h3>Entra a tu portal</h3><p>Tras el pago llegas directo a tu portal de clientes con tu código de licencia y cupos disponibles.</p></li>
+                <li class="step reveal"><span class="step-n">1</span><h3>Elige y paga tu licencia</h3><p>Selecciona el plan ideal y paga con el link seguro de <?= e(PAYMENT_PROVIDER) ?>: tarjeta, PSE o efectivo.</p></li>
+                <li class="step reveal"><span class="step-n">2</span><h3>Activamos tu licencia</h3><p>Verificamos el pago y activamos tu licencia. En tu portal encuentras el código y los cupos disponibles.</p></li>
                 <li class="step reveal"><span class="step-n">3</span><h3>Invita a tu equipo</h3><p>Agrega a tus docentes uno a uno o de forma masiva y empieza a transformar tus clases hoy.</p></li>
             </ol>
         </div>
@@ -298,7 +298,7 @@ include __DIR__ . '/includes/partials/nav.php';
             <div class="section-head reveal">
                 <span class="eyebrow">Precios</span>
                 <h2>Licencias para <span class="text-gradient">toda tu institución</span></h2>
-                <p>Precio total en pesos colombianos, pago único por 12 meses, sin cargos adicionales al pagar. Paga con tarjeta, PSE o efectivo.</p>
+                <p>Precio total en pesos colombianos, pago único por 12 meses, sin cargos adicionales al pagar. Paga con tarjeta, PSE o efectivo mediante un link seguro.</p>
             </div>
             <div class="pricing">
                 <?php foreach ($PLANS as $p): ?>

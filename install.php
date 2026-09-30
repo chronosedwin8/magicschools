@@ -48,6 +48,14 @@ try {
         $out[] = 'Columna "payment_url" agregada a pedidos.';
     }
 
+    // Migración: link de pago editable por plan
+    $hasLink = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plan_settings' AND COLUMN_NAME = 'payment_link'")->fetchColumn();
+    if (!$hasLink) {
+        $pdo->exec('ALTER TABLE plan_settings ADD COLUMN payment_link VARCHAR(500) NULL AFTER features');
+        $out[] = 'Columna "payment_link" agregada a los planes.';
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);

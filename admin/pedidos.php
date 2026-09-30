@@ -11,17 +11,12 @@ if (is_post()) {
         if ($order['status'] === 'approved') {
             flash('info', 'El pedido ya estaba aprobado.');
         } else {
-            approve_order_manually($order, trim((string) ($_POST['note'] ?? '')) ?: 'sin nota');
-            flash('success', 'Pedido ' . $order['reference'] . ' aprobado y licencia creada.');
-        }
-    } elseif ($action === 'sync') {
-        if (!mp_enabled()) {
-            flash('error', 'Mercado Pago no está configurado.');
-        } else {
-            $updated = sync_order_with_mp($order);
-            flash($updated ? 'success' : 'info', $updated
-                ? 'Sincronizado con Mercado Pago. Estado actual: ' . ($ORDER_STATUS[$updated['status']][0] ?? $updated['status']) . '.'
-                : 'Mercado Pago no registra pagos para esta orden.');
+            approve_order_manually(
+                $order,
+                trim((string) ($_POST['note'] ?? '')),
+                trim((string) ($_POST['payment_reference'] ?? ''))
+            );
+            flash('success', 'Pago confirmado: el pedido ' . $order['reference'] . ' quedó aprobado y la licencia está activa.');
         }
     } elseif ($action === 'cancel') {
         if ($order['status'] === 'approved') {
@@ -78,7 +73,7 @@ include __DIR__ . '/../portal/_top.php';
 <section class="panel">
     <div class="table-wrap">
         <table class="table">
-            <thead><tr><th>Orden</th><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Pago MP</th><th></th></tr></thead>
+            <thead><tr><th>Orden</th><th>Cliente</th><th>Plan</th><th>Valor</th><th>Estado</th><th>Referencia de pago</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($orders as $o): [$lbl, $cls] = $ORDER_STATUS[$o['status']] ?? [$o['status'], 'muted']; ?>
                 <tr>
@@ -93,16 +88,15 @@ include __DIR__ . '/../portal/_top.php';
                             <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Licencia</a>
                         <?php endif; ?>
                         <?php if ($o['status'] !== 'approved'): ?>
-                            <form method="post"><?= csrf_field() . admin_qs_field() ?><input type="hidden" name="order_id" value="<?= (int) $o['id'] ?>">
-                                <button class="btn btn-ghost btn-sm" name="action" value="sync" title="Consultar estado en Mercado Pago">Sincronizar</button></form>
                             <details class="edit-pop">
-                                <summary class="btn btn-primary btn-sm">Aprobar</summary>
+                                <summary class="btn btn-primary btn-sm">Confirmar pago</summary>
                                 <form method="post" class="pop"><?= csrf_field() . admin_qs_field() ?>
                                     <input type="hidden" name="order_id" value="<?= (int) $o['id'] ?>">
                                     <input type="hidden" name="action" value="approve">
-                                    <p class="small">Aprobar manualmente crea la licencia sin pago en Mercado Pago.</p>
-                                    <label>Nota (ej. transferencia #)<input name="note" maxlength="80"></label>
-                                    <button class="btn btn-primary btn-sm btn-block">Confirmar aprobación</button>
+                                    <p class="small">Verifica el pago en tu cuenta de <?= e(PAYMENT_PROVIDER) ?> y confírmalo aquí: se activa la licencia del cliente.</p>
+                                    <label>Referencia del pago <span class="field-hint">(opcional)</span><input name="payment_reference" maxlength="40" placeholder="Ej. 123456789"></label>
+                                    <label>Nota interna<input name="note" maxlength="80" placeholder="Ej. transferencia, link de pago…"></label>
+                                    <button class="btn btn-primary btn-sm btn-block">Confirmar y activar licencia</button>
                                 </form>
                             </details>
                             <?php if ($o['status'] !== 'cancelled'): ?>

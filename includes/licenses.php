@@ -37,7 +37,7 @@ function generate_license_key(): string
  * Aplica el resultado de un pago a una orden. Idempotente:
  * si la orden ya fue aprobada no se crea otra licencia.
  *
- * @param array $payment  Datos del pago (formato API de Mercado Pago o simulador)
+ * @param array $payment  Datos del pago confirmado por el administrador
  * @return array|null     Orden actualizada
  */
 function apply_payment(array $payment): ?array
@@ -176,38 +176,18 @@ function license_by_id(int $licenseId): ?array
  * Aprueba manualmente una orden (transferencia, pago por fuera, cortesía).
  * Reutiliza apply_payment para crear la licencia de forma idempotente.
  */
-function approve_order_manually(array $order, string $note = 'manual'): ?array
+function approve_order_manually(array $order, string $note = '', string $paymentReference = ''): ?array
 {
+    $paymentReference = preg_replace('/[^\w\-]/', '', $paymentReference);
     return apply_payment([
-        'id'                 => 'MANUAL-' . date('ymdHis'),
+        'id'                 => $paymentReference !== '' ? mb_substr($paymentReference, 0, 40) : 'MANUAL-' . date('ymdHis'),
         'status'             => 'approved',
-        'status_detail'      => mb_substr('Aprobado por administrador: ' . $note, 0, 120),
+        'status_detail'      => mb_substr('Confirmado por administrador' . ($note !== '' ? ': ' . $note : ''), 0, 120),
         'external_reference' => $order['reference'],
         'transaction_amount' => (float) $order['amount'],
         'currency_id'        => $order['currency'],
-        'payment_method_id'  => 'manual',
+        'payment_method_id'  => 'link',
     ]);
-}
-
-/**
- * Consulta en Mercado Pago los pagos de una orden y aplica el más reciente.
- */
-function sync_order_with_mp(array $order): ?array
-{
-    $res = mp_request('GET', '/v1/payments/search?sort=date_created&criteria=desc&external_reference=' . urlencode($order['reference']));
-    $results = $res['body']['results'] ?? [];
-    if (!$results) {
-        return null;
-    }
-    // Prioriza un pago aprobado si existe
-    $payment = $results[0];
-    foreach ($results as $p) {
-        if (($p['status'] ?? '') === 'approved') {
-            $payment = $p;
-            break;
-        }
-    }
-    return apply_payment($payment);
 }
 
 function license_members(int $licenseId): array

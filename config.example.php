@@ -1,7 +1,7 @@
 <?php
 /**
  * PLANTILLA de configuración. Copia este archivo como config.php y completa
- * las credenciales. config.php NO se versiona (ver .gitignore).
+ * los datos. config.php NO se versiona (ver .gitignore).
  */
 // ---------------------------------------------------------------------------
 // Marca
@@ -11,9 +11,11 @@ define('BRAND_SHORT', 'AulaMágica');
 define('COMPANY_NAME', 'AulaMágica S.L.');      // Razón social real del vendedor
 // Identificación del prestador: la LSSI-CE (Ley 34/2002, art. 10) exige mostrar
 // denominación social, NIF, domicilio, correo y datos registrales.
+// Estos tres datos son opcionales: si se dejan vacíos, no se muestran en ningún lado.
+// La actividad es solo en línea, sin establecimiento abierto al público.
 define('COMPANY_COUNTRY', 'España');
-define('COMPANY_NIF', 'NIF pendiente');
-define('COMPANY_ADDRESS', 'Domicilio pendiente, España');
+define('COMPANY_NIF', '');        // p. ej. 'B12345678'
+define('COMPANY_ADDRESS', '');    // domicilio fiscal, si se desea publicar
 define('COMPANY_REGISTRY', '');   // p. ej. 'Inscrita en el Registro Mercantil de Madrid, tomo X, folio Y, hoja M-Z'
 define('SUPPORT_EMAIL', 'soporte@aulamagica.co');
 define('SUPPORT_PHONE', '+57 300 000 0000');
@@ -51,25 +53,13 @@ define('DB_USER', '');
 define('DB_PASS', '');
 
 // ---------------------------------------------------------------------------
-// Mercado Pago (Checkout Pro)
-// Credenciales: https://www.mercadopago.com.co/developers/panel/app
-//  - MP_ACCESS_TOKEN: "Access Token" (TEST-... para pruebas, APP_USR-... producción)
-//  - MP_PUBLIC_KEY:   "Public Key"
-//  - MP_WEBHOOK_SECRET: clave secreta de notificaciones (Webhooks) para validar firma
-// Si MP_ACCESS_TOKEN está vacío y DEMO_MODE = true se usa un simulador de pago local.
+// Cobros: se usan links de pago de Mercado Pago (uno por plan).
+// El link de cada plan se define abajo en $PLANS['...']['payment_link'] y se
+// puede cambiar en cualquier momento desde Administración > Precios y planes.
+// El pago ocurre fuera del sitio, así que la licencia se activa cuando el
+// administrador confirma el pedido en Administración > Pedidos y pagos.
 // ---------------------------------------------------------------------------
-// Credenciales de PRODUCCIÓN (cobros reales)
-define('MP_ACCESS_TOKEN', '');   // Access Token de Mercado Pago
-define('MP_PUBLIC_KEY', '');     // Public Key de Mercado Pago
-define('MP_WEBHOOK_SECRET', ''); // Clave secreta de Webhooks
-// Nombre que aparece en el extracto de la tarjeta / detalle del pago.
-// Usa el nombre de la aplicación de Mercado Pago. Máx. 22 caracteres, sin tildes.
-define('MP_STATEMENT_DESCRIPTOR', 'MAGICSCHOOLS');
-// 'custom' = pantalla de cobro propia en el sitio (Checkout API: tarjeta, PSE, Efecty)
-// 'pro'    = redirección a Checkout Pro de Mercado Pago
-define('MP_CHECKOUT_MODE', 'custom');
-define('MP_SANDBOX', false);       // false = cobros reales (init_point)
-define('DEMO_MODE', false);        // Simulador desactivado
+define('PAYMENT_PROVIDER', 'Mercado Pago');
 
 // ---------------------------------------------------------------------------
 // Planes / licencias (valores en COP)
@@ -85,6 +75,7 @@ $PLANS = [
         'seats'       => 60,
         'months'      => 12,
         'featured'    => false,
+        'payment_link' => 'https://mpago.li/2QYmYxX',
         'features'    => [
             'Hasta 60 usuarios (docentes y directivos)',
             'Más de 80 herramientas de IA para docentes',
@@ -103,6 +94,7 @@ $PLANS = [
         'seats'       => 250,
         'months'      => 12,
         'featured'    => true,
+        'payment_link' => 'https://mpago.li/18fzoqq',
         'features'    => [
             'Hasta 250 usuarios en varias sedes',
             'Todo lo incluido en la Licencia Escuela',

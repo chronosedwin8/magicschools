@@ -100,6 +100,7 @@ CREATE TABLE IF NOT EXISTS plan_settings (
     months      INT UNSIGNED NOT NULL,
     featured    TINYINT(1) NOT NULL DEFAULT 0,
     features    TEXT NULL,
+    payment_link VARCHAR(500) NULL,
     updated_by  INT UNSIGNED NULL,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -1,7 +1,7 @@
 <?php
 /**
- * Resultado de un pago pendiente o rechazado (Efecty, PSE, pagos en revisión).
- * Consulta periódicamente el estado y redirige al portal cuando se aprueba.
+ * Estado del pedido tras usar el link de pago.
+ * La licencia se activa cuando el administrador confirma el pago.
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
@@ -16,12 +16,10 @@ if ($order['status'] === 'approved') {
     redirect($lic ? 'portal/licencia.php?id=' . $lic['id'] : 'portal/');
 }
 
-$isEfecty = $order['payment_method'] === 'efecty';
-$isPse = $order['payment_method'] === 'pse';
-$pending = in_array($order['status'], ['pending', 'review'], true);
-$message = mp_status_detail_message($order['status'], (string) $order['status_detail']);
+$enRevision = $order['status'] === 'review';
+$cancelado = in_array($order['status'], ['cancelled', 'rejected'], true);
 
-$pageTitle = 'Estado del pago | ' . BRAND_NAME;
+$pageTitle = 'Estado de tu pedido | ' . BRAND_NAME;
 $bodyClass = 'page-simple page-pay';
 $extraCss = 'assets/css/pay.css';
 include __DIR__ . '/../includes/partials/head.php';
@@ -29,53 +27,39 @@ include __DIR__ . '/../includes/partials/head.php';
 <header class="pay-header">
     <div class="container pay-header-inner">
         <a href="<?= e(url('')) ?>" class="nav-brand"><?php include __DIR__ . '/../includes/partials/logo.php'; ?></a>
-        <span class="pay-secure">🔒 Pago 100% seguro</span>
+        <span class="pay-secure">🔒 Pago seguro</span>
     </div>
 </header>
 <main class="result">
     <div class="container">
         <div class="card result-card">
-            <?php if ($pending): ?>
-                <div class="result-icon wait"><?= $isEfecty ? '💵' : '⏳' ?></div>
-                <h2><?= $isEfecty ? 'Tu cupón de pago está listo' : ($isPse ? 'Completa el pago en tu banco' : 'Estamos procesando tu pago') ?></h2>
-                <p class="muted"><?= e($isEfecty
-                    ? 'Paga ' . money($order['amount']) . ' en cualquier punto Efecty presentando el cupón. Tu licencia se activará automáticamente cuando se acredite el pago.'
-                    : $message) ?></p>
-                <?php if ($order['payment_url']): ?>
-                    <a class="btn btn-primary btn-lg" href="<?= e($order['payment_url']) ?>" target="_blank" rel="noopener">
-                        <?= $isEfecty ? 'Ver e imprimir cupón' : ($isPse ? 'Ir a mi banco' : 'Continuar el pago') ?></a>
-                <?php endif; ?>
-                <p class="muted small mt-24" id="poll-note">Esta página se actualizará sola cuando confirmemos el pago.</p>
-            <?php else: ?>
+            <?= render_flashes() ?>
+            <?php if ($enRevision): ?>
+                <div class="result-icon wait">⏳</div>
+                <h2>Estamos verificando tu pago</h2>
+                <p class="muted">Recibimos tu aviso. En cuanto confirmemos el pago con <?= e(PAYMENT_PROVIDER) ?> activaremos tu licencia
+                    y la verás en tu portal. Normalmente ocurre el mismo día hábil y te avisamos a <strong><?= e($user['email']) ?></strong>.</p>
+            <?php elseif ($cancelado): ?>
                 <div class="result-icon bad">✕</div>
-                <h2>El pago no se completó</h2>
-                <p class="muted"><?= e($message) ?></p>
+                <h2>Este pedido está <?= $order['status'] === 'cancelled' ? 'cancelado' : 'sin completar' ?></h2>
+                <p class="muted">Puedes generar el pago de nuevo o escribirnos si necesitas ayuda.</p>
+            <?php else: ?>
+                <div class="result-icon wait">💳</div>
+                <h2>Tu pedido está pendiente de pago</h2>
+                <p class="muted">Usa el link de pago para completar la compra. Cuando pagues, avísanos desde la misma pantalla.</p>
             <?php endif; ?>
+
             <div class="hero-ctas" style="justify-content:center">
-                <a class="btn btn-outline" href="<?= e(url('pago/pagar.php?ref=' . urlencode($order['reference']))) ?>"><?= $pending ? 'Pagar con otro medio' : 'Intentar de nuevo' ?></a>
+                <a class="btn btn-primary" href="<?= e(url('pago/pagar.php?ref=' . urlencode($order['reference']))) ?>">
+                    <?= $enRevision ? 'Ver el link de pago' : 'Ir al link de pago' ?></a>
                 <a class="btn btn-ghost" href="<?= e(url('portal/pedidos.php')) ?>">Ir a mis pedidos</a>
             </div>
-            <?php $noticeCompact = true; include __DIR__ . '/../includes/partials/commerce_notice.php'; ?>
+
             <p class="muted small">Pedido <?= e($order['reference']) ?> · <?= e($order['plan_name']) ?> · <?= e(money($order['amount'])) ?></p>
+            <p class="muted small">¿Dudas con tu pago? Escríbenos a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> o al <?= e(SUPPORT_PHONE) ?>.</p>
         </div>
     </div>
 </main>
-<?php if ($pending): ?>
-<script>
-(function () {
-    var url = <?= json_encode(url('pago/estado.php?flash=1&ref=' . urlencode($order['reference'])), JSON_UNESCAPED_SLASHES) ?>;
-    var tries = 0;
-    function poll() {
-        tries++;
-        fetch(url, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) {
-            if (d.status === 'approved' && d.redirect) { window.location.href = d.redirect; return; }
-            if (d.status === 'rejected' || d.status === 'cancelled') { window.location.reload(); return; }
-            if (tries < 120) setTimeout(poll, tries < 12 ? 5000 : 15000);
-        }).catch(function () { if (tries < 120) setTimeout(poll, 15000); });
-    }
-    setTimeout(poll, 4000);
-})();
-</script>
-<?php endif; ?>
+<script src="<?= e(url('assets/js/main.js')) ?>" defer></script>
 </body>
 </html>

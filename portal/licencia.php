@@ -143,7 +143,7 @@ include __DIR__ . '/_top.php';
     <div class="kpi"><span class="kpi-icon c-purple">📅</span><div><small>Fecha de inicio</small><strong class="kpi-sm"><?= fecha($license['starts_at']) ?></strong></div></div>
     <div class="kpi"><span class="kpi-icon c-pink">⏳</span><div><small>Vence</small><strong class="kpi-sm"><?= fecha($license['expires_at']) ?></strong><small><?= $daysLeft ?> días restantes</small></div></div>
     <div class="kpi"><span class="kpi-icon c-green">💳</span><div><small>Pago</small><strong class="kpi-sm"><?= e(money($license['amount'])) ?></strong><small>Orden <?= e($license['reference']) ?></small></div></div>
-    <div class="kpi"><span class="kpi-icon c-orange">🧾</span><div><small>ID de pago Mercado Pago</small><strong class="kpi-sm"><?= e($license['mp_payment_id'] ?: '—') ?></strong><small><?= e(strtoupper((string) $license['payment_method'])) ?></small></div></div>
+    <div class="kpi"><span class="kpi-icon c-orange">🧾</span><div><small>Referencia de pago</small><strong class="kpi-sm"><?= e($license['mp_payment_id'] ?: '—') ?></strong><small><?= e(strtoupper((string) $license['payment_method'])) ?></small></div></div>
 </div>
 
 <div class="two-col">
