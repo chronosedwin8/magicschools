@@ -29,8 +29,8 @@ define('OPERATOR_TAX_ID', '');
 
 // Distribución autorizada (opcional): si vendes licencias de otra plataforma,
 // decláralo aquí y se mostrará de forma visible en el sitio.
-define('RESELLER_OF', 'MagicSchool');
-define('RESELLER_TERRITORY', 'Colombia y Latinoamérica');
+define('RESELLER_OF', '');        // p. ej. 'MagicSchool' si distribuyes una plataforma de terceros
+define('RESELLER_TERRITORY', ''); // p. ej. 'Colombia y Latinoamérica'
 
 // URL donde el cliente usa la plataforma contratada (opcional).
 // Si se define, aparece un acceso visible en el sitio y en el portal.
