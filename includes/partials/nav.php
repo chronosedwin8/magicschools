@@ -42,6 +42,9 @@
                 <?php else: ?>
                     <a class="btn btn-ghost" href="<?= e(url('portal/login.php')) ?>">Portal de clientes</a>
                 <?php endif; ?>
+                <?php if (PLATFORM_URL !== ''): ?>
+                    <a class="btn btn-ghost" href="<?= e(PLATFORM_URL) ?>" target="_blank" rel="noopener">Acceder a la plataforma ↗</a>
+                <?php endif; ?>
                 <a class="btn btn-primary" href="<?= e($home) ?>#precios">Comprar licencia</a>
             </div>
         </div>

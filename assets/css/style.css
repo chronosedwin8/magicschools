@@ -506,3 +506,6 @@ textarea { resize: vertical; }
 .legal-card:hover { color: inherit; }
 .legal-card h3 { color: var(--ink); }
 .legal-card .link-arrow { color: var(--primary); font-size: .9rem; margin-top: 14px; display: inline-flex; }
+
+/* Aviso de distribución autorizada */
+.reseller-note { display: inline-flex; align-items: center; gap: 8px; background: #E6FAF1; border: 1px solid #B6EDD6; color: #0E7A50; border-radius: 999px; padding: 8px 16px; font-size: .9rem; font-weight: 600; margin: 0 0 20px; }

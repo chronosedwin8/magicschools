@@ -25,7 +25,7 @@ $faqs = [
     ['¿Qué pasa después de pagar?', 'Nos avisas desde la misma pantalla y verificamos el pago. Al confirmarlo activamos tu licencia, normalmente el mismo día hábil: en tu portal de clientes verás el código, los cupos y la vigencia, y podrás agregar a tus docentes y directivos.'],
     ['¿Puedo cambiar los usuarios de la licencia?', 'Sí. Desde el portal puedes agregar, retirar o reemplazar usuarios en cualquier momento, siempre dentro del número de cupos de tu plan.'],
     ['¿Cuál es la diferencia entre Licencia Escuela y Licencia por Volumen?', 'La Licencia Escuela está pensada para una sola institución. La Licencia por Volumen agrega más cupos, soporte para varias sedes, reportes por sede, formación ampliada y un gerente de cuenta dedicado.'],
-    ['¿Desde dónde se realiza la venta?', 'Somos una empresa establecida en ' . COMPANY_COUNTRY . ' y vendemos en línea bajo la normativa española de comercio electrónico (LSSI-CE). El precio publicado es el valor total que cobramos, sin cargos adicionales al pagar. Los tributos o retenciones que, en su caso, correspondan en el país del comprador se rigen por la legislación de ese país.'],
+    ['¿Quién vende y desde dónde?', 'La venta la realiza ' . COMPANY_NAME . ', con sede en ' . COMPANY_COUNTRY . ', de forma exclusivamente en línea. El precio publicado es el valor total que cobramos, sin cargos adicionales al pagar. Los tributos o retenciones que, en su caso, correspondan en el país del comprador se rigen por la legislación de ese país.'],
     ['¿Los datos de mis estudiantes están protegidos?', 'Sí. Tratamos los datos personales conforme al Reglamento General de Protección de Datos (RGPD) y la LOPDGDD, no vendemos información y no usamos los datos de tu institución para entrenar modelos de IA.'],
 ];
 
@@ -57,6 +57,9 @@ include __DIR__ . '/includes/partials/nav.php';
                     <a href="#precios" class="btn btn-primary btn-lg">Comprar licencia <span aria-hidden="true">→</span></a>
                     <a href="#contacto" class="btn btn-outline btn-lg">Hablar con un asesor</a>
                 </div>
+                <?php if (RESELLER_OF !== ''): ?>
+                    <p class="reseller-note">✔️ <strong>Distribuidor autorizado de <?= e(RESELLER_OF) ?></strong><?= RESELLER_TERRITORY !== '' ? ' en ' . e(RESELLER_TERRITORY) : '' ?>.</p>
+                <?php endif; ?>
                 <ul class="hero-checks">
                     <li>Más de 80 herramientas</li>
                     <li>Pago seguro con <?= e(PAYMENT_PROVIDER) ?></li>
@@ -374,7 +377,7 @@ include __DIR__ . '/includes/partials/nav.php';
                 </a>
             </div>
             <p class="center muted small mt-24">
-                <?= e(COMPANY_NAME) ?> · Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?> ·
+                Vendedor: <?= e(COMPANY_NAME) ?><?= COMPANY_TAX_ID !== '' ? ' · ' . e(tax_label()) . ' ' . e(COMPANY_TAX_ID) : '' ?> · Venta en línea desde <?= e(COMPANY_COUNTRY) ?> ·
                 Soporte: <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><?= SUPPORT_PHONE !== '' ? ' · ' . e(SUPPORT_PHONE) : '' ?>
             </p>
         </div>

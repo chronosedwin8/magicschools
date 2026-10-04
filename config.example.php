@@ -8,17 +8,47 @@
 // ---------------------------------------------------------------------------
 define('BRAND_NAME', 'AulaMágica IA');          // Nombre visible del producto
 define('BRAND_SHORT', 'AulaMágica');
-define('COMPANY_NAME', 'Grupo Logic SAS Latinoamerica');  // Razón social real del vendedor
-// Identificación del prestador: la LSSI-CE (Ley 34/2002, art. 10) exige mostrar
-// denominación social, NIF, domicilio, correo y datos registrales.
-// Estos tres datos son opcionales: si se dejan vacíos, no se muestran en ningún lado.
-// La actividad es solo en línea, sin establecimiento abierto al público.
-define('COMPANY_COUNTRY', 'España');
-define('COMPANY_NIF', '');        // p. ej. 'B12345678'
+// ---------------------------------------------------------------------------
+// VENDEDOR: la empresa que factura al cliente final y firma los términos.
+// Su país determina el marco legal que se muestra en legal.php:
+//   'Colombia' -> Ley 1480 de 2011 y Ley 1581 de 2012
+//   'España'   -> LSSI-CE (Ley 34/2002) y RGPD / LOPDGDD
+// Los campos vacíos no se muestran en ninguna página.
+// ---------------------------------------------------------------------------
+define('COMPANY_NAME', 'Grupo Logic SAS Latinoamerica');  // Razón social del vendedor
+define('COMPANY_COUNTRY', 'Colombia');
+define('COMPANY_TAX_ID', '');     // NIT (Colombia) o NIF (España). Ej. '901234567-8'
 define('COMPANY_ADDRESS', '');    // domicilio fiscal, si se desea publicar
-define('COMPANY_REGISTRY', '');   // p. ej. 'Inscrita en el Registro Mercantil de Madrid, tomo X, folio Y, hoja M-Z'
+define('COMPANY_REGISTRY', '');   // datos registrales (Cámara de Comercio / Registro Mercantil)
+
+// Segunda entidad del grupo (opcional). Se muestra como operadora, no como vendedora.
+define('OPERATOR_NAME', '');      // p. ej. la sociedad española del grupo
+define('OPERATOR_COUNTRY', '');
+define('OPERATOR_TAX_ID', '');
+
+// Distribución autorizada (opcional): si vendes licencias de otra plataforma,
+// decláralo aquí y se mostrará de forma visible en el sitio.
+define('RESELLER_OF', 'MagicSchool');
+define('RESELLER_TERRITORY', 'Colombia y Latinoamérica');
+
+// URL donde el cliente usa la plataforma contratada (opcional).
+// Si se define, aparece un acceso visible en el sitio y en el portal.
+define('PLATFORM_URL', '');
+
 define('SUPPORT_EMAIL', 'gestion@grupologiclatam.com');
 define('SUPPORT_PHONE', '');   // Opcional: si se deja vacío, no se muestra en ninguna página
+
+/** Etiqueta de la identificación fiscal según el país del vendedor. */
+function tax_label(): string
+{
+    return COMPANY_COUNTRY === 'España' ? 'NIF' : 'NIT';
+}
+
+/** ¿El marco legal aplicable es el español? */
+function is_spanish_law(): bool
+{
+    return COMPANY_COUNTRY === 'España';
+}
 
 // ---------------------------------------------------------------------------
 // Entorno y URL base (sin barra final)
@@ -41,7 +71,7 @@ unset($__host);
 // ---------------------------------------------------------------------------
 define('ADMIN_EMAIL', 'chronosedwin8@gmail.com');
 define('ADMIN_NAME', 'Administrador');
-define('ADMIN_PASSWORD_HASH', ''); // php -r "echo password_hash('TuClave', PASSWORD_DEFAULT);"
+define('ADMIN_PASSWORD_HASH', '');
 
 // ---------------------------------------------------------------------------
 // Base de datos MySQL

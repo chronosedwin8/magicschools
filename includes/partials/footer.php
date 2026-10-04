@@ -47,12 +47,13 @@
         // Solo se muestran los datos que estén completos en config.php
         $footerBits = array_filter([
             '© ' . date('Y') . ' ' . COMPANY_NAME,
-            COMPANY_NIF !== '' ? 'NIF ' . COMPANY_NIF : '',
+            COMPANY_TAX_ID !== '' ? tax_label() . ' ' . COMPANY_TAX_ID : '',
             COMPANY_ADDRESS,
             COMPANY_REGISTRY,
         ], 'strlen');
         ?>
-        <span><?= e(rtrim(implode(' · ', $footerBits), '.')) ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
+        <span><?= e(rtrim(implode(' · ', $footerBits), '.')) ?>. Venta en línea desde <?= e(COMPANY_COUNTRY) ?>.
+            <?php if (RESELLER_OF !== ''): ?><br>Distribuidor autorizado de <?= e(RESELLER_OF) ?><?= RESELLER_TERRITORY !== '' ? ' en ' . e(RESELLER_TERRITORY) : '' ?>.<?php endif; ?></span>
         <span class="footer-legal">
             <a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a>
             <a href="<?= e(url('legal.php#privacidad')) ?>">Aviso de privacidad</a>
