@@ -13,5 +13,5 @@
         <circle cx="29.5" cy="28.5" r="2.4" fill="#FFC940"/>
         <circle cx="11" cy="29" r="1.6" fill="#fff" opacity=".8"/>
     </svg>
-    <span class="logo-text"><?= e(BRAND_SHORT) ?><strong>IA</strong></span>
+    <span class="logo-text"><?= e(BRAND_SHORT) ?><?= BRAND_SUFFIX !== '' ? '<strong>' . e(BRAND_SUFFIX) . '</strong>' : '' ?></span>
 </span>
