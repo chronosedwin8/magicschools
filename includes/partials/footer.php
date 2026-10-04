@@ -41,6 +41,16 @@
                 <?php if (SUPPORT_PHONE !== ''): ?><li><?= e(SUPPORT_PHONE) ?></li><?php endif; ?>
             </ul>
         </div>
+        <div>
+            <h4>Legal</h4>
+            <ul>
+                <li><a href="<?= e(url('legal.php#terminos')) ?>">Términos del servicio</a></li>
+                <li><a href="<?= e(url('legal.php#privacidad')) ?>">Aviso de privacidad</a></li>
+                <li><a href="<?= e(url('legal.php#reembolsos')) ?>">Política de reembolsos</a></li>
+                <li><a href="<?= e(url('legal.php#comercio')) ?>">Condiciones de compra</a></li>
+                <li><a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a></li>
+            </ul>
+        </div>
     </div>
     <div class="container footer-bottom">
         <?php

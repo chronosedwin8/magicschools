@@ -383,7 +383,7 @@ textarea { resize: vertical; }
 
 /* ---------- Footer ---------- */
 .site-footer { background: #140B2B; color: #BDB3D9; padding: 70px 0 30px; }
-.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 40px; }
+.footer-grid { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 36px; }
 .footer-brand p { margin: 18px 0; max-width: 340px; }
 .site-footer h4 { color: #fff; font-size: 1rem; margin-bottom: 16px; }
 .site-footer ul { list-style: none; padding: 0; margin: 0; }
