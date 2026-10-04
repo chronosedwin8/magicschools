@@ -500,3 +500,9 @@ textarea { resize: vertical; }
 .commerce-notice a { font-weight: 600; white-space: nowrap; }
 .commerce-notice.compact { font-size: .8rem; padding: 12px 14px; }
 .section-pricing .commerce-notice { max-width: 908px; margin: 28px auto 0; }
+
+/* Tarjetas de información legal en la portada */
+.legal-card { display: block; color: inherit; }
+.legal-card:hover { color: inherit; }
+.legal-card h3 { color: var(--ink); }
+.legal-card .link-arrow { color: var(--primary); font-size: .9rem; margin-top: 14px; display: inline-flex; }

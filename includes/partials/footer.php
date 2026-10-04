@@ -28,6 +28,7 @@
                 <li><a href="<?= e($home) ?>#comunidad">Formación y certificación</a></li>
                 <li><a href="<?= e($home) ?>#comunidad">Comunidad de pioneros</a></li>
                 <li><a href="<?= e($home) ?>#faq">Preguntas frecuentes</a></li>
+                <li><a href="<?= e($home) ?>#legal">Información legal</a></li>
                 <li><a href="<?= e(url('portal/login.php')) ?>">Portal de clientes</a></li>
             </ul>
         </div>
@@ -54,8 +55,9 @@
         <span><?= e(rtrim(implode(' · ', $footerBits), '.')) ?>. Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?>.</span>
         <span class="footer-legal">
             <a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a>
-            <a href="<?= e(url('legal.php#privacidad')) ?>">Privacidad</a>
-            <a href="<?= e(url('legal.php#terminos')) ?>">Términos</a>
+            <a href="<?= e(url('legal.php#privacidad')) ?>">Aviso de privacidad</a>
+            <a href="<?= e(url('legal.php#terminos')) ?>">Términos del servicio</a>
+            <a href="<?= e(url('legal.php#reembolsos')) ?>">Política de reembolsos</a>
             <a href="<?= e($home) ?>#seguridad">Centro de confianza</a>
             <a href="<?= e(url('legal.php#accesibilidad')) ?>">Accesibilidad</a>
         </span>

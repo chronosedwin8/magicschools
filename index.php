@@ -345,6 +345,41 @@ include __DIR__ . '/includes/partials/nav.php';
         </div>
     </section>
 
+    <!-- LEGAL ========================================================== -->
+    <section class="section section-soft" id="legal">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="eyebrow">Información legal</span>
+                <h2>Compra con <span class="text-gradient">todo claro</span></h2>
+                <p>Estas son nuestras condiciones de compra, de uso y de tratamiento de datos. Puedes consultarlas antes de pagar.</p>
+            </div>
+            <div class="cards-3">
+                <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#terminos')) ?>">
+                    <span class="fc-emoji c-purple">📄</span>
+                    <h3>Términos del servicio</h3>
+                    <p>Qué incluye la licencia, su vigencia, cómo se activa y las condiciones de uso de la plataforma.</p>
+                    <span class="link-arrow">Leer los términos <span aria-hidden="true">→</span></span>
+                </a>
+                <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#privacidad')) ?>">
+                    <span class="fc-emoji c-pink">🔐</span>
+                    <h3>Aviso de privacidad</h3>
+                    <p>Qué datos tratamos, con qué fin, durante cuánto tiempo y cómo ejerces tus derechos bajo el RGPD.</p>
+                    <span class="link-arrow">Leer el aviso <span aria-hidden="true">→</span></span>
+                </a>
+                <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#reembolsos')) ?>">
+                    <span class="fc-emoji c-green">↩️</span>
+                    <h3>Política de reembolsos</h3>
+                    <p>Devolución del 100 % dentro de los 14 días naturales siguientes al pago, por el mismo medio de pago.</p>
+                    <span class="link-arrow">Leer la política <span aria-hidden="true">→</span></span>
+                </a>
+            </div>
+            <p class="center muted small mt-24">
+                <?= e(COMPANY_NAME) ?> · Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?> ·
+                Soporte: <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> · <?= e(SUPPORT_PHONE) ?>
+            </p>
+        </div>
+    </section>
+
     <!-- CONTACT / CTA =================================================== -->
     <section class="cta" id="contacto">
         <div class="container cta-grid">
