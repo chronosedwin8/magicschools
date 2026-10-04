@@ -69,7 +69,7 @@ include __DIR__ . '/_top.php';
     <div class="panel">
         <h3>💬 ¿Necesitas ayuda?</h3>
         <p class="muted">Nuestro equipo te acompaña en la activación y en la formación de tus docentes.</p>
-        <p><strong>Correo:</strong> <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><br><strong>Teléfono / WhatsApp:</strong> <?= e(SUPPORT_PHONE) ?></p>
+        <p><strong>Correo:</strong> <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><?php if (SUPPORT_PHONE !== ''): ?><br><strong>Teléfono / WhatsApp:</strong> <?= e(SUPPORT_PHONE) ?><?php endif; ?></p>
     </div>
 </div>
 <?php include __DIR__ . '/_bottom.php'; ?>

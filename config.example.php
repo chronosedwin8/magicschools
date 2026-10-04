@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------------------
 define('BRAND_NAME', 'AulaMágica IA');          // Nombre visible del producto
 define('BRAND_SHORT', 'AulaMágica');
-define('COMPANY_NAME', 'AulaMágica S.L.');      // Razón social real del vendedor
+define('COMPANY_NAME', 'Grupo Logic SAS Latinoamerica');  // Razón social real del vendedor
 // Identificación del prestador: la LSSI-CE (Ley 34/2002, art. 10) exige mostrar
 // denominación social, NIF, domicilio, correo y datos registrales.
 // Estos tres datos son opcionales: si se dejan vacíos, no se muestran en ningún lado.
@@ -17,8 +17,8 @@ define('COMPANY_COUNTRY', 'España');
 define('COMPANY_NIF', '');        // p. ej. 'B12345678'
 define('COMPANY_ADDRESS', '');    // domicilio fiscal, si se desea publicar
 define('COMPANY_REGISTRY', '');   // p. ej. 'Inscrita en el Registro Mercantil de Madrid, tomo X, folio Y, hoja M-Z'
-define('SUPPORT_EMAIL', 'soporte@aulamagica.co');
-define('SUPPORT_PHONE', '+57 300 000 0000');
+define('SUPPORT_EMAIL', 'gestion@grupologiclatam.com');
+define('SUPPORT_PHONE', '');   // Opcional: si se deja vacío, no se muestra en ninguna página
 
 // ---------------------------------------------------------------------------
 // Entorno y URL base (sin barra final)

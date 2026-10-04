@@ -54,7 +54,7 @@ include __DIR__ . '/includes/partials/nav.php';
             <li><strong>Efecto sobre la licencia:</strong> al aprobarse el reembolso, la licencia y los accesos de los usuarios asociados quedan desactivados.</li>
             <li><strong>Problemas con el servicio:</strong> si el servicio no está disponible por causas atribuibles a <?= e(COMPANY_NAME) ?>, puedes solicitar el reembolso en cualquier momento de la vigencia.</li>
         </ul>
-        <p>Cualquier duda sobre un pago o un reembolso se atiende en <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> o en el <?= e(SUPPORT_PHONE) ?>.</p>
+        <p>Cualquier duda sobre un pago o un reembolso se atiende en <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><?= SUPPORT_PHONE !== '' ? ' o en el ' . e(SUPPORT_PHONE) : '' ?>.</p>
 
         <h2 id="privacidad">Aviso de privacidad</h2>
         <p><?= e(COMPANY_NAME) ?> trata los datos personales de administradores, docentes y estudiantes conforme al Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 (LOPDGDD), únicamente para prestar el servicio, gestionar la compra y brindar soporte.</p>

@@ -38,7 +38,7 @@
                 <li><a href="<?= e($home) ?>#precios">Precios</a></li>
                 <li><a href="<?= e($home) ?>#contacto">Contacto</a></li>
                 <li><a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a></li>
-                <li><?= e(SUPPORT_PHONE) ?></li>
+                <?php if (SUPPORT_PHONE !== ''): ?><li><?= e(SUPPORT_PHONE) ?></li><?php endif; ?>
             </ul>
         </div>
     </div>

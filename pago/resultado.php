@@ -56,7 +56,7 @@ include __DIR__ . '/../includes/partials/head.php';
             </div>
 
             <p class="muted small">Pedido <?= e($order['reference']) ?> · <?= e($order['plan_name']) ?> · <?= e(money($order['amount'])) ?></p>
-            <p class="muted small">¿Dudas con tu pago? Escríbenos a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> o al <?= e(SUPPORT_PHONE) ?>.</p>
+            <p class="muted small">¿Dudas con tu pago? Escríbenos a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a>.</p>
         </div>
     </div>
 </main>

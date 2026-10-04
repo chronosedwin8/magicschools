@@ -375,7 +375,7 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
             <p class="center muted small mt-24">
                 <?= e(COMPANY_NAME) ?> · Comercio electrónico desde <?= e(COMPANY_COUNTRY) ?> ·
-                Soporte: <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> · <?= e(SUPPORT_PHONE) ?>
+                Soporte: <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><?= SUPPORT_PHONE !== '' ? ' · ' . e(SUPPORT_PHONE) : '' ?>
             </p>
         </div>
     </section>

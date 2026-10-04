@@ -85,7 +85,7 @@ include __DIR__ . '/../includes/partials/head.php';
             <?php endif; ?>
 
             <p class="pay-foot-note">¿Necesitas factura, otra forma de pago o ayuda? Escríbenos a
-                <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> o al <?= e(SUPPORT_PHONE) ?>.</p>
+                <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a><?= SUPPORT_PHONE !== '' ? ' o al ' . e(SUPPORT_PHONE) : '' ?>.</p>
         </section>
 
         <aside class="card pay-summary">
