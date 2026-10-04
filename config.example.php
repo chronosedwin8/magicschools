@@ -6,8 +6,8 @@
 // ---------------------------------------------------------------------------
 // Marca
 // ---------------------------------------------------------------------------
-define('BRAND_NAME', 'MagicSchool');            // Nombre visible del producto
-define('BRAND_SHORT', 'MagicSchool');
+define('BRAND_NAME', 'MagicSchools');           // Nombre visible del producto
+define('BRAND_SHORT', 'MagicSchools');
 define('BRAND_SUFFIX', '');                     // Sufijo del logotipo (p. ej. 'IA'); vacío = sin sufijo
 // ---------------------------------------------------------------------------
 // VENDEDOR: la empresa que factura al cliente final y firma los términos.
