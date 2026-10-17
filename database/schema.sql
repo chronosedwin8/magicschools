@@ -195,3 +195,21 @@ CREATE TABLE IF NOT EXISTS ai_consents (
     UNIQUE KEY uq_consent (license_id, version),
     CONSTRAINT fk_ai_consent_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Solicitudes de los titulares sobre sus datos personales
+-- (Ley 1581 de 2012: acceso, actualización, rectificación, supresión y revocatoria)
+CREATE TABLE IF NOT EXISTS data_requests (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    kind        VARCHAR(20)  NOT NULL,
+    name        VARCHAR(120) NOT NULL,
+    email       VARCHAR(190) NOT NULL,
+    document    VARCHAR(40)  NULL,
+    institution VARCHAR(190) NULL,
+    detail      TEXT NULL,
+    status      ENUM('pendiente','en_tramite','resuelta') NOT NULL DEFAULT 'pendiente',
+    answered_at DATETIME NULL,
+    note        VARCHAR(255) NULL,
+    ip_hash     CHAR(64) NULL,
+    created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_data_requests_status (status, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

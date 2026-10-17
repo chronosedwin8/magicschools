@@ -176,3 +176,21 @@
         });
     }
 })();
+
+/* Aviso de cookies: solo informa, porque el sitio no instala cookies opcionales */
+(function () {
+    var box = document.getElementById('cookie-notice');
+    if (!box) return;
+    var KEY = 'ms_cookies=';
+    var visto = document.cookie.split('; ').some(function (c) { return c.indexOf(KEY) === 0; });
+    if (visto) return;
+    box.hidden = false;
+    var btn = box.querySelector('[data-cookie-accept]');
+    if (btn) {
+        btn.addEventListener('click', function () {
+            var seis = new Date(Date.now() + 182 * 864e5).toUTCString();
+            document.cookie = KEY + '1; expires=' + seis + '; path=/; SameSite=Lax';
+            box.hidden = true;
+        });
+    }
+})();

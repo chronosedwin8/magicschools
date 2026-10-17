@@ -47,6 +47,9 @@
                 <li><a href="<?= e(url('legal.php#terminos')) ?>">Términos del servicio</a></li>
                 <li><a href="<?= e(url('legal.php#privacidad')) ?>">Aviso de privacidad</a></li>
                 <li><a href="<?= e(url('legal.php#reembolsos')) ?>">Política de reembolsos</a></li>
+                <li><a href="<?= e(url('legal.php#cookies')) ?>">Política de cookies</a></li>
+                <li><a href="<?= e(url('legal.php#propiedad')) ?>">Propiedad intelectual</a></li>
+                <li><a href="<?= e(url('derechos.php')) ?>">Tus datos personales</a></li>
                 <li><a href="<?= e(url('legal.php#comercio')) ?>">Condiciones de compra</a></li>
                 <li><a href="<?= e(url('legal.php#aviso')) ?>">Aviso legal</a></li>
             </ul>
@@ -69,11 +72,13 @@
             <a href="<?= e(url('legal.php#privacidad')) ?>">Aviso de privacidad</a>
             <a href="<?= e(url('legal.php#terminos')) ?>">Términos del servicio</a>
             <a href="<?= e(url('legal.php#reembolsos')) ?>">Política de reembolsos</a>
+            <a href="<?= e(url('legal.php#cookies')) ?>">Cookies</a>
             <a href="<?= e($home) ?>#seguridad">Centro de confianza</a>
             <a href="<?= e(url('legal.php#accesibilidad')) ?>">Accesibilidad</a>
         </span>
     </div>
 </footer>
+<?php include __DIR__ . '/cookie_notice.php'; ?>
 <script src="<?= e(url('assets/js/main.js')) ?>?v=<?= filemtime(__DIR__ . '/../../assets/js/main.js') ?>" defer></script>
 </body>
 </html>

@@ -81,8 +81,47 @@ include __DIR__ . '/includes/partials/nav.php';
         <ul>
             <li>No vendemos ni compartimos datos personales con terceros para fines comerciales.</li>
             <li>No usamos los datos de la institución para entrenar modelos de inteligencia artificial.</li>
-            <li>Puedes ejercer tus derechos de acceso, rectificación, actualización, supresión y oposición escribiendo a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a>.</li>
+            <li>Puedes ejercer tus derechos de acceso, actualización, rectificación, supresión, oposición y revocatoria de la autorización desde el <a href="<?= e(url('derechos.php')) ?>">formulario de derechos</a> o escribiendo a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a>. Respondemos en los plazos de ley: 10 días hábiles para consultas y 15 días hábiles para reclamos.</li>
             <li>Los datos de pago son procesados directamente por la pasarela de pago; no almacenamos datos de tarjetas.</li>
+            <li><strong>Encargados del tratamiento:</strong> para prestar el servicio usamos proveedores que pueden procesar datos por cuenta nuestra: el proveedor de inteligencia artificial que genera los textos, la pasarela de pago y el proveedor de alojamiento. Solo reciben lo necesario y no pueden usar la información para fines propios.</li>
+            <li><strong>Transferencia internacional:</strong> esos proveedores operan servidores fuera de Colombia. Al usar el servicio aceptas esa transferencia, que se realiza con las garantías contractuales correspondientes.</li>
+            <li><strong>Conservación:</strong> los datos de la cuenta se conservan mientras la licencia esté vigente y hasta cinco años después por obligaciones contables. Los textos generados con IA se conservan mientras el docente los mantenga en su biblioteca y puede borrarlos cuando quiera.</li>
+            <li><strong>Datos de estudiantes y menores:</strong> la institución es responsable de contar con la autorización de los padres o acudientes antes de ingresar datos de un estudiante. El sitio pide esa declaración antes de habilitar las herramientas que lo requieren.</li>
+        </ul>
+
+        <h2 id="cookies">Política de cookies</h2>
+        <p>Una cookie es un archivo pequeño que el sitio guarda en tu navegador. Usamos las mínimas necesarias y ninguna sirve para publicidad.</p>
+        <table class="legal-table">
+            <thead><tr><th>Cookie</th><th>Para qué sirve</th><th>Tipo</th><th>Duración</th></tr></thead>
+            <tbody>
+                <tr><td><code>AMSESSID</code></td><td>Mantener la sesión iniciada en el portal y proteger los formularios</td><td>Necesaria</td><td>Hasta cerrar el navegador</td></tr>
+                <tr><td><code>ms_cookies</code></td><td>Recordar tu decisión sobre esta política</td><td>Necesaria</td><td>6 meses</td></tr>
+            </tbody>
+        </table>
+        <p>Hoy <strong>no usamos cookies de analítica, publicidad ni redes sociales</strong>, y por eso el sitio funciona sin pedirte consentimiento para ellas. Si algún día las incorporamos, te las pediremos antes de instalarlas y podrás rechazarlas sin perder ninguna función.</p>
+        <p>El sitio carga tipografías desde un servicio externo (Google Fonts), lo que implica que ese proveedor recibe tu dirección IP al mostrar la página. No instala cookies.</p>
+        <p>Puedes borrar o bloquear las cookies desde la configuración de tu navegador. Si bloqueas las necesarias, no podrás iniciar sesión en el portal.</p>
+
+        <h2 id="registro">Registro de usuarios</h2>
+        <p>Para comprar una licencia o usar el portal hay que crear una cuenta. Al registrarte aceptas lo siguiente:</p>
+        <ul>
+            <li>Los datos que entregas son verdaderos y están actualizados, y eres responsable de mantenerlos así.</li>
+            <li>La contraseña es personal e intransferible. Si sospechas que alguien más la conoce, cámbiala desde tu portal y avísanos.</li>
+            <li>Cada cuenta corresponde a una persona. Las licencias institucionales permiten crear cuentas para los docentes que la institución autorice, dentro del número de cupos contratado.</li>
+            <li>El administrador institucional responde por el uso que hagan las cuentas que él mismo da de alta.</li>
+            <li>Podemos suspender una cuenta que incumpla estos términos, que intente vulnerar la seguridad del servicio o que lo use para fines ilícitos. Si ocurre, te lo informaremos.</li>
+            <li>Puedes solicitar la eliminación de tu cuenta en cualquier momento desde el <a href="<?= e(url('derechos.php')) ?>">formulario de derechos</a>.</li>
+            <li>Al registrarte aceptas estos términos y el <a href="#privacidad">aviso de privacidad</a>, y autorizas el tratamiento de tus datos para prestarte el servicio.</li>
+        </ul>
+
+        <h2 id="propiedad">Propiedad intelectual y derechos de imagen</h2>
+        <ul>
+            <li><strong>Del sitio:</strong> la marca, el logotipo, los textos, el diseño y el software de <?= e(BRAND_NAME) ?> pertenecen a <?= e(COMPANY_NAME) ?> o a quien nos haya autorizado su uso. No se permite copiarlos, modificarlos ni redistribuirlos sin permiso escrito.</li>
+            <li><strong>De lo que generas:</strong> el contenido que produces con las herramientas es tuyo y de tu institución. Puedes usarlo, editarlo, imprimirlo y compartirlo con fines educativos sin pagarnos nada adicional. No reclamamos derechos sobre ese material.</li>
+            <li><strong>De lo que aportas:</strong> si subes textos, imágenes o logotipos, declaras que tienes derecho a usarlos. Solo los empleamos para prestarte el servicio.</li>
+            <li><strong>Contenido generado con IA:</strong> los resultados son borradores que requieren tu revisión. Pueden contener errores y no garantizamos que sean únicos, ya que un texto similar podría generarse para otra persona.</li>
+            <li><strong>Derechos de imagen:</strong> no publicamos fotografías ni videos de docentes o estudiantes. Si alguna vez quisiéramos usar un testimonio, una imagen o el nombre de tu institución con fines de difusión, pediremos antes tu autorización por escrito y podrás revocarla cuando quieras.</li>
+            <li><strong>Reclamaciones:</strong> si consideras que algún contenido del sitio vulnera tus derechos, escríbenos a <a href="mailto:<?= e(SUPPORT_EMAIL) ?>"><?= e(SUPPORT_EMAIL) ?></a> y lo revisaremos de inmediato.</li>
         </ul>
 
         <h2 id="accesibilidad">Accesibilidad</h2>
