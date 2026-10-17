@@ -22,6 +22,11 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/licenses.php';
 require_once __DIR__ . '/plans.php';
 require_once __DIR__ . '/ai.php';
+require_once __DIR__ . '/ai_tools.php';
+require_once __DIR__ . '/ai_render.php';
+require_once __DIR__ . '/usage.php';
+require_once __DIR__ . '/ai_run.php';
+require_once __DIR__ . '/export.php';
 require_once __DIR__ . '/partials/icon.php';
 
 apply_plan_overrides();

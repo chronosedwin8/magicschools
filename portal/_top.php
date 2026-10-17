@@ -4,15 +4,24 @@
 $areaLabel = $areaLabel ?? 'Portal de clientes';
 $pageTitle = ($pageTitle ?? 'Portal') . ' | ' . $areaLabel . ' ' . BRAND_SHORT;
 $bodyClass = 'portal';
-$extraCss = 'assets/css/portal.css';
+$extraCss = array_values(array_filter(['assets/css/portal.css', $pageCss ?? '']));
 include __DIR__ . '/../includes/partials/head.php';
 $initials = mb_strtoupper(implode('', array_map(fn($p) => mb_substr($p, 0, 1), array_slice(preg_split('/\s+/', trim($user['name'])), 0, 2))));
-$nav = $nav ?? [
-    'inicio'   => ['portal/', '🏠', 'Inicio'],
-    'licencias'=> ['portal/licencias.php', '🎟️', 'Mis licencias'],
-    'pedidos'  => ['portal/pedidos.php', '🧾', 'Pedidos y pagos'],
-    'cuenta'   => ['portal/cuenta.php', '👤', 'Mi cuenta'],
-];
+if (!isset($nav)) {
+    $nav = is_teacher($user)
+        ? [
+            'herramientas' => ['portal/herramientas.php', '✨', 'Herramientas'],
+            'documentos'   => ['portal/documentos.php', '📁', 'Mis documentos'],
+            'cuenta'       => ['portal/cuenta.php', '👤', 'Mi cuenta'],
+        ]
+        : [
+            'inicio'       => ['portal/', '🏠', 'Inicio'],
+            'herramientas' => ['portal/herramientas.php', '✨', 'Herramientas'],
+            'licencias'    => ['portal/licencias.php', '🎟️', 'Mis licencias'],
+            'pedidos'      => ['portal/pedidos.php', '🧾', 'Pedidos y pagos'],
+            'cuenta'       => ['portal/cuenta.php', '👤', 'Mi cuenta'],
+        ];
+}
 $isAdminArea = $isAdminArea ?? false;
 ?>
 <div class="portal-shell">
@@ -32,7 +41,7 @@ $isAdminArea = $isAdminArea ?? false;
                 <?php endif; ?>
             <?php endif; ?>
         </nav>
-        <?php if (!$isAdminArea): ?>
+        <?php if (!$isAdminArea && !is_teacher($user)): ?>
         <div class="side-cta">
             <strong>¿Necesitas más cupos?</strong>
             <p>Adquiere una licencia adicional para tu institución.</p>

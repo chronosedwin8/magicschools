@@ -12,3 +12,7 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+# Dependencias de Composer (se instalan en el servidor)
+vendor/
+storage/cache/

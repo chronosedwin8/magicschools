@@ -42,6 +42,74 @@ function require_login(): array
     return $user;
 }
 
+function is_teacher(?array $user = null): bool
+{
+    $user ??= current_user();
+    return $user !== null && ($user['role'] ?? '') === 'teacher';
+}
+
+/**
+ * Ficha del docente dentro de su licencia (license_members).
+ */
+function current_member(?array $user = null): ?array
+{
+    static $member = false;
+    $user ??= current_user();
+    if ($user === null) {
+        return null;
+    }
+    if ($member === false) {
+        $member = db_one('SELECT * FROM license_members WHERE user_id = ? ORDER BY id DESC LIMIT 1', [$user['id']]);
+    }
+    return $member;
+}
+
+/**
+ * Licencia con la que trabaja el usuario actual:
+ * el docente la hereda de su institución; el cliente institucional usa la suya.
+ */
+function current_license(?array $user = null): ?array
+{
+    static $license = false;
+    $user ??= current_user();
+    if ($user === null) {
+        return null;
+    }
+    if ($license !== false) {
+        return $license;
+    }
+    if (is_teacher($user)) {
+        $member = current_member($user);
+        $license = $member
+            ? db_one('SELECT l.*, u.institution FROM licenses l JOIN users u ON u.id = l.user_id WHERE l.id = ?', [$member['license_id']])
+            : null;
+    } else {
+        $license = db_one(
+            'SELECT l.*, u.institution FROM licenses l JOIN users u ON u.id = l.user_id
+              WHERE l.user_id = ? AND l.status = "active" AND l.expires_at > NOW()
+              ORDER BY l.expires_at DESC LIMIT 1',
+            [$user['id']]
+        );
+    }
+    return $license;
+}
+
+/**
+ * Páginas de herramientas: exige sesión y una licencia activa.
+ */
+function require_tools_access(): array
+{
+    $user = require_login();
+    $license = current_license($user);
+    if (!$license || !license_is_usable($license)) {
+        flash('warning', is_teacher($user)
+            ? 'La licencia de tu institución no está activa. Avisa a quien la administra.'
+            : 'Necesitas una licencia activa para usar las herramientas.');
+        redirect(is_teacher($user) ? 'portal/' : 'portal/licencias.php');
+    }
+    return [$user, $license];
+}
+
 function is_admin(?array $user = null): bool
 {
     $user ??= current_user();

@@ -16,8 +16,8 @@ $pageDescription = $pageDescription ?? 'Plataforma de inteligencia artificial se
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(url('assets/css/style.css')) ?>?v=<?= filemtime(__DIR__ . '/../../assets/css/style.css') ?>">
-    <?php if (!empty($extraCss)): ?>
-        <link rel="stylesheet" href="<?= e(url($extraCss)) ?>?v=<?= filemtime(__DIR__ . '/../../' . $extraCss) ?>">
-    <?php endif; ?>
+    <?php foreach ((array) ($extraCss ?? []) as $sheet): if ($sheet === '') continue; ?>
+        <link rel="stylesheet" href="<?= e(url($sheet)) ?>?v=<?= filemtime(__DIR__ . '/../../' . $sheet) ?>">
+    <?php endforeach; ?>
 </head>
 <body class="<?= e($bodyClass ?? '') ?>">
