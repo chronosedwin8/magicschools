@@ -5,18 +5,18 @@ $pageTitle = BRAND_NAME . ' | Inteligencia artificial segura para colegios';
 $bodyClass = 'page-home';
 
 $tools = [
-    ['cat' => 'planeacion', 'icon' => '📊', 'color' => 'purple', 'name' => 'Generador de presentaciones', 'desc' => 'Crea diapositivas completas para tu clase a partir de un tema, un texto o un video.'],
-    ['cat' => 'planeacion', 'icon' => '🗂️', 'color' => 'pink',   'name' => 'Plan de clase',               'desc' => 'Diseña planes de clase alineados a estándares y DBA en pocos minutos.'],
-    ['cat' => 'evaluacion', 'icon' => '✍️', 'color' => 'orange', 'name' => 'Retroalimentación de escritos', 'desc' => 'Ofrece comentarios específicos y accionables sobre los textos de tus estudiantes.'],
-    ['cat' => 'planeacion', 'icon' => '💡', 'color' => 'yellow', 'name' => 'Generador de ideas',          'desc' => 'Lluvia de ideas para actividades, proyectos y dinámicas de aula.'],
-    ['cat' => 'comunicacion','icon' => '📝', 'color' => 'green', 'name' => 'Observaciones de boletín',    'desc' => 'Redacta observaciones de desempeño claras, personalizadas y respetuosas.'],
-    ['cat' => 'evaluacion', 'icon' => '✅', 'color' => 'blue',   'name' => 'Quiz de selección múltiple',   'desc' => 'Genera evaluaciones con clave de respuestas desde cualquier contenido.'],
-    ['cat' => 'apoyo',      'icon' => '🤖', 'color' => 'purple', 'name' => 'Tutor de IA',                 'desc' => 'Un tutor paciente que guía al estudiante sin darle las respuestas.'],
-    ['cat' => 'apoyo',      'icon' => '🔁', 'color' => 'pink',   'name' => 'Reescritor de textos',        'desc' => 'Adapta lecturas a distintos niveles de complejidad y necesidades.'],
-    ['cat' => 'evaluacion', 'icon' => '📐', 'color' => 'orange', 'name' => 'Generador de rúbricas',       'desc' => 'Construye rúbricas con criterios y niveles de desempeño detallados.'],
-    ['cat' => 'apoyo',      'icon' => '🧩', 'color' => 'yellow', 'name' => 'Plan de ajustes razonables (PIAR)', 'desc' => 'Apoya la construcción de ajustes para estudiantes con necesidades diversas.'],
-    ['cat' => 'planeacion', 'icon' => '🪜', 'color' => 'green',  'name' => 'Tareas por pasos',            'desc' => 'Crea guías de trabajo con lectura, preguntas y actividades secuenciadas.'],
-    ['cat' => 'comunicacion','icon' => '✉️', 'color' => 'blue',  'name' => 'Correo profesional',          'desc' => 'Escribe mensajes a familias y colegas con el tono adecuado.'],
+    ['cat' => 'planeacion', 'icon' => 'presentacion', 'color' => 'purple', 'name' => 'Generador de presentaciones', 'desc' => 'Crea diapositivas completas para tu clase a partir de un tema, un texto o un video.'],
+    ['cat' => 'planeacion', 'icon' => 'plan', 'color' => 'pink',   'name' => 'Plan de clase',               'desc' => 'Diseña planes de clase alineados a estándares y DBA en pocos minutos.'],
+    ['cat' => 'evaluacion', 'icon' => 'escritos', 'color' => 'orange', 'name' => 'Retroalimentación de escritos', 'desc' => 'Ofrece comentarios específicos y accionables sobre los textos de tus estudiantes.'],
+    ['cat' => 'planeacion', 'icon' => 'idea', 'color' => 'yellow', 'name' => 'Generador de ideas',          'desc' => 'Lluvia de ideas para actividades, proyectos y dinámicas de aula.'],
+    ['cat' => 'comunicacion','icon' => 'boletin', 'color' => 'green', 'name' => 'Observaciones de boletín',    'desc' => 'Redacta observaciones de desempeño claras, personalizadas y respetuosas.'],
+    ['cat' => 'evaluacion', 'icon' => 'quiz', 'color' => 'blue',   'name' => 'Quiz de selección múltiple',   'desc' => 'Genera evaluaciones con clave de respuestas desde cualquier contenido.'],
+    ['cat' => 'apoyo',      'icon' => 'tutor', 'color' => 'purple', 'name' => 'Tutor de IA',                 'desc' => 'Un tutor paciente que guía al estudiante sin darle las respuestas.'],
+    ['cat' => 'apoyo',      'icon' => 'reescribir', 'color' => 'pink',   'name' => 'Reescritor de textos',        'desc' => 'Adapta lecturas a distintos niveles de complejidad y necesidades.'],
+    ['cat' => 'evaluacion', 'icon' => 'rubrica', 'color' => 'orange', 'name' => 'Generador de rúbricas',       'desc' => 'Construye rúbricas con criterios y niveles de desempeño detallados.'],
+    ['cat' => 'apoyo',      'icon' => 'inclusion', 'color' => 'yellow', 'name' => 'Plan de ajustes razonables (PIAR)', 'desc' => 'Apoya la construcción de ajustes para estudiantes con necesidades diversas.'],
+    ['cat' => 'planeacion', 'icon' => 'pasos', 'color' => 'green',  'name' => 'Tareas por pasos',            'desc' => 'Crea guías de trabajo con lectura, preguntas y actividades secuenciadas.'],
+    ['cat' => 'comunicacion','icon' => 'correo', 'color' => 'blue',  'name' => 'Correo profesional',          'desc' => 'Escribe mensajes a familias y colegas con el tono adecuado.'],
 ];
 
 $faqs = [
@@ -70,14 +70,14 @@ include __DIR__ . '/includes/partials/nav.php';
                 <div class="mock-window">
                     <div class="mock-bar"><span></span><span></span><span></span><em><?= e(BRAND_SHORT) ?> · Herramientas</em></div>
                     <div class="mock-body">
-                        <div class="mock-search">🔍 &nbsp;Buscar entre 80+ herramientas…</div>
+                        <div class="mock-search"><?= icon('chispa', 16) ?> Buscar entre 80+ herramientas…</div>
                         <div class="mock-grid">
-                            <div class="mock-card c-purple"><b>📊</b><span>Presentaciones</span></div>
-                            <div class="mock-card c-pink"><b>🗂️</b><span>Plan de clase</span></div>
-                            <div class="mock-card c-orange"><b>📐</b><span>Rúbricas</span></div>
-                            <div class="mock-card c-green"><b>✅</b><span>Quiz</span></div>
-                            <div class="mock-card c-yellow"><b>💡</b><span>Ideas</span></div>
-                            <div class="mock-card c-blue"><b>✉️</b><span>Correos</span></div>
+                            <div class="mock-card c-purple"><b><?= icon('presentacion', 20) ?></b><span>Presentaciones</span></div>
+                            <div class="mock-card c-pink"><b><?= icon('plan', 20) ?></b><span>Plan de clase</span></div>
+                            <div class="mock-card c-orange"><b><?= icon('rubrica', 20) ?></b><span>Rúbricas</span></div>
+                            <div class="mock-card c-green"><b><?= icon('quiz', 20) ?></b><span>Quiz</span></div>
+                            <div class="mock-card c-yellow"><b><?= icon('idea', 20) ?></b><span>Ideas</span></div>
+                            <div class="mock-card c-blue"><b><?= icon('correo', 20) ?></b><span>Correos</span></div>
                         </div>
                         <div class="mock-output">
                             <div class="mock-line w80"></div>
@@ -87,8 +87,8 @@ include __DIR__ . '/includes/partials/nav.php';
                         </div>
                     </div>
                 </div>
-                <div class="float-card fc-1"><span class="fc-icon">⏱️</span><div><strong>Horas recuperadas</strong><small>cada semana por docente</small></div></div>
-                <div class="float-card fc-2"><span class="fc-icon">🛡️</span><div><strong>Datos protegidos</strong><small>Conforme al RGPD</small></div></div>
+                <div class="float-card fc-1"><span class="fc-icon"><?= icon('reloj', 20) ?></span><div><strong>Horas recuperadas</strong><small>cada semana por docente</small></div></div>
+                <div class="float-card fc-2"><span class="fc-icon"><?= icon('escudo', 20) ?></span><div><strong>Datos protegidos</strong><small>Conforme al RGPD</small></div></div>
             </div>
         </div>
     </section>
@@ -126,7 +126,7 @@ include __DIR__ . '/includes/partials/nav.php';
             <div class="tools-grid">
                 <?php foreach ($tools as $t): ?>
                     <article class="tool-card reveal" data-cat="<?= e($t['cat']) ?>">
-                        <span class="tool-icon c-<?= e($t['color']) ?>"><?= $t['icon'] ?></span>
+                        <span class="tool-icon c-<?= e($t['color']) ?>"><?= icon($t['icon'], 22) ?></span>
                         <h3><?= e($t['name']) ?></h3>
                         <p><?= e($t['desc']) ?></p>
                         <span class="tool-link">Probar herramienta <span aria-hidden="true">→</span></span>
@@ -149,7 +149,7 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
             <div class="pillars">
                 <article class="pillar p-purple reveal">
-                    <span class="pillar-badge">🏫 IA para colegios</span>
+                    <span class="pillar-badge"><?= icon('colegio', 16) ?> IA para colegios</span>
                     <h3>Control, seguridad y visibilidad para directivos</h3>
                     <ul class="checklist">
                         <li>Administración centralizada de usuarios y licencias</li>
@@ -160,7 +160,7 @@ include __DIR__ . '/includes/partials/nav.php';
                     <a href="#precios" class="link-arrow">Conocer planes <span>→</span></a>
                 </article>
                 <article class="pillar p-pink reveal">
-                    <span class="pillar-badge">🍎 IA para docentes</span>
+                    <span class="pillar-badge"><?= icon('docente', 16) ?> IA para docentes</span>
                     <h3>Más tiempo para enseñar, menos para el papeleo</h3>
                     <ul class="checklist">
                         <li>Más de 80 herramientas para planear, evaluar y comunicar</li>
@@ -171,7 +171,7 @@ include __DIR__ . '/includes/partials/nav.php';
                     <a href="#herramientas" class="link-arrow">Ver herramientas <span>→</span></a>
                 </article>
                 <article class="pillar p-orange reveal">
-                    <span class="pillar-badge">🎒 IA para estudiantes</span>
+                    <span class="pillar-badge"><?= icon('estudiante', 16) ?> IA para estudiantes</span>
                     <h3>Aprendizaje guiado, seguro y supervisado</h3>
                     <ul class="checklist">
                         <li>Más de 50 herramientas diseñadas para estudiantes</li>
@@ -239,15 +239,15 @@ include __DIR__ . '/includes/partials/nav.php';
                 <p class="muted">La seguridad no es un complemento: es la base de todo lo que hacemos.</p>
                 <div class="accordion" data-accordion>
                     <div class="acc-item open">
-                        <button class="acc-head"><span>🔒 Seguridad de nivel institucional</span><i></i></button>
+                        <button class="acc-head"><span><?= icon('candado', 20) ?> Seguridad de nivel institucional</span><i></i></button>
                         <div class="acc-body"><p>Cifrado de la información en tránsito y en reposo, controles de acceso por rol, inicio de sesión con cuentas institucionales y monitoreo permanente de la plataforma.</p></div>
                     </div>
                     <div class="acc-item">
-                        <button class="acc-head"><span>🛡️ Privacidad de los datos</span><i></i></button>
+                        <button class="acc-head"><span><?= icon('escudo', 20) ?> Privacidad de los datos</span><i></i></button>
                         <div class="acc-body"><p>Tratamos los datos personales conforme al RGPD (UE) 2016/679 y la Ley Orgánica 3/2018 (LOPDGDD). No vendemos información y no usamos los datos de docentes ni estudiantes para entrenar modelos de IA.</p></div>
                     </div>
                     <div class="acc-item">
-                        <button class="acc-head"><span>🤝 IA responsable</span><i></i></button>
+                        <button class="acc-head"><span><?= icon('manos', 20) ?> IA responsable</span><i></i></button>
                         <div class="acc-body"><p>Filtros de contenido adecuados a la edad, alertas para temas sensibles, supervisión docente de todas las interacciones estudiantiles y recordatorios constantes para verificar la información generada.</p></div>
                     </div>
                 </div>
@@ -271,9 +271,9 @@ include __DIR__ . '/includes/partials/nav.php';
                 <h2>Aprende, crece y <span class="text-gradient">lidera</span> con IA</h2>
             </div>
             <div class="cards-3">
-                <article class="feature-card reveal"><span class="fc-emoji c-purple">🎓</span><h3>Cursos de certificación</h3><p>Rutas de aprendizaje autónomas para que cada docente domine la IA en el aula y obtenga su certificado.</p></article>
-                <article class="feature-card reveal"><span class="fc-emoji c-pink">👩‍🏫</span><h3>Formación profesional</h3><p>Talleres en vivo para tu equipo, adaptados a tu institución, incluidos en todas las licencias.</p></article>
-                <article class="feature-card reveal"><span class="fc-emoji c-orange">🚀</span><h3>Comunidad de pioneros</h3><p>Conecta con educadores de todo el país que comparten prácticas, recursos y experiencias con IA.</p></article>
+                <article class="feature-card reveal"><span class="fc-emoji c-purple"><?= icon('certificado', 26) ?></span><h3>Cursos de certificación</h3><p>Rutas de aprendizaje autónomas para que cada docente domine la IA en el aula y obtenga su certificado.</p></article>
+                <article class="feature-card reveal"><span class="fc-emoji c-pink"><?= icon('formacion', 26) ?></span><h3>Formación profesional</h3><p>Talleres en vivo para tu equipo, adaptados a tu institución, incluidos en todas las licencias.</p></article>
+                <article class="feature-card reveal"><span class="fc-emoji c-orange"><?= icon('comunidad', 26) ?></span><h3>Comunidad de pioneros</h3><p>Conecta con educadores de todo el país que comparten prácticas, recursos y experiencias con IA.</p></article>
             </div>
         </div>
     </section>
@@ -323,7 +323,7 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
             <div class="pay-methods reveal">
                 <span class="mp-badge"><svg viewBox="0 0 48 32" width="34" height="24" aria-hidden="true"><ellipse cx="24" cy="16" rx="23" ry="15" fill="#00B1EA"/><path d="M11 17c3-4 7-6 13-6s10 2 13 6c-3 3-7 5-13 5s-10-2-13-5z" fill="#fff"/><path d="M17 16l4 2 6-4 4 3" fill="none" stroke="#00B1EA" stroke-width="2" stroke-linecap="round"/></svg> Pagos procesados por <strong>Mercado Pago</strong></span>
-                <span>💳 Tarjetas</span><span>🏦 PSE</span><span>💵 Efecty</span><span>🔐 Transacción cifrada</span>
+                <span><?= icon('tarjeta', 18) ?> Tarjetas</span><span><?= icon('banco', 18) ?> PSE</span><span><?= icon('efectivo', 18) ?> Efecty</span><span><?= icon('cifrado', 18) ?> Transacción cifrada</span>
             </div>
             <div class="reveal"><?php include __DIR__ . '/includes/partials/commerce_notice.php'; ?></div>
             <p class="center muted small mt-24">¿Necesitas más de 250 usuarios o una propuesta a la medida? <a href="#contacto">Contáctanos</a>.</p>
@@ -358,19 +358,19 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
             <div class="cards-3">
                 <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#terminos')) ?>">
-                    <span class="fc-emoji c-purple">📄</span>
+                    <span class="fc-emoji c-purple"><?= icon('documento', 26) ?></span>
                     <h3>Términos del servicio</h3>
                     <p>Qué incluye la licencia, su vigencia, cómo se activa y las condiciones de uso de la plataforma.</p>
                     <span class="link-arrow">Leer los términos <span aria-hidden="true">→</span></span>
                 </a>
                 <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#privacidad')) ?>">
-                    <span class="fc-emoji c-pink">🔐</span>
+                    <span class="fc-emoji c-pink"><?= icon('privacidad', 26) ?></span>
                     <h3>Aviso de privacidad</h3>
                     <p>Qué datos tratamos, con qué fin, durante cuánto tiempo y cómo ejerces tus derechos bajo el RGPD.</p>
                     <span class="link-arrow">Leer el aviso <span aria-hidden="true">→</span></span>
                 </a>
                 <a class="feature-card legal-card reveal" href="<?= e(url('legal.php#reembolsos')) ?>">
-                    <span class="fc-emoji c-green">↩️</span>
+                    <span class="fc-emoji c-green"><?= icon('reembolso', 26) ?></span>
                     <h3>Política de reembolsos</h3>
                     <p>Devolución del 100 % dentro de los 14 días naturales siguientes al pago, por el mismo medio de pago.</p>
                     <span class="link-arrow">Leer la política <span aria-hidden="true">→</span></span>

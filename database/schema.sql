@@ -104,3 +104,94 @@ CREATE TABLE IF NOT EXISTS plan_settings (
     updated_by  INT UNSIGNED NULL,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===========================================================================
+-- Módulo de herramientas de IA para docentes
+-- ===========================================================================
+
+-- Perfil del docente: se pregunta una vez y se inyecta en todos los prompts
+CREATE TABLE IF NOT EXISTS teacher_profiles (
+    user_id     INT UNSIGNED NOT NULL PRIMARY KEY,
+    grades      VARCHAR(120) NULL,
+    areas       VARCHAR(190) NULL,
+    subjects    VARCHAR(190) NULL,
+    approach    VARCHAR(255) NULL,
+    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_teacher_profiles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Una fila por generación. Conserva nombre y correo para que el historial
+-- sobreviva a la baja del docente (los miembros se borran físicamente).
+CREATE TABLE IF NOT EXISTS ai_generations (
+    id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    license_id     INT UNSIGNED NOT NULL,
+    user_id        INT UNSIGNED NULL,
+    author_name    VARCHAR(120) NULL,
+    author_email   VARCHAR(190) NULL,
+    tool_slug      VARCHAR(40)  NOT NULL,
+    tool_name      VARCHAR(100) NOT NULL,
+    status         ENUM('pending','done','error') NOT NULL DEFAULT 'pending',
+    title          VARCHAR(190) NULL,
+    input_json     MEDIUMTEXT NULL,
+    output_text    MEDIUMTEXT NULL,
+    output_format  VARCHAR(10) NOT NULL DEFAULT 'markdown',
+    model          VARCHAR(60) NULL,
+    prompt_tokens  INT UNSIGNED NOT NULL DEFAULT 0,
+    output_tokens  INT UNSIGNED NOT NULL DEFAULT 0,
+    cost_micro_usd BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    error          VARCHAR(255) NULL,
+    created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    finished_at    DATETIME NULL,
+    INDEX idx_ai_gen_license (license_id, created_at),
+    INDEX idx_ai_gen_user (user_id, created_at),
+    INDEX idx_ai_gen_status (status, created_at),
+    CONSTRAINT fk_ai_gen_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ai_gen_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Contador por licencia, usuario y mes. user_id = 0 agrega el total de la licencia.
+CREATE TABLE IF NOT EXISTS ai_usage_month (
+    id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    license_id     INT UNSIGNED NOT NULL,
+    user_id        INT UNSIGNED NOT NULL DEFAULT 0,
+    period         CHAR(6) NOT NULL,
+    generations    INT UNSIGNED NOT NULL DEFAULT 0,
+    prompt_tokens  BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    output_tokens  BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    cost_micro_usd BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_usage (license_id, user_id, period),
+    CONSTRAINT fk_ai_usage_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Resultados que el docente guarda en su biblioteca (puede editarlos)
+CREATE TABLE IF NOT EXISTS ai_documents (
+    id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    generation_id INT UNSIGNED NULL,
+    license_id    INT UNSIGNED NOT NULL,
+    user_id       INT UNSIGNED NULL,
+    tool_slug     VARCHAR(40)  NOT NULL,
+    title         VARCHAR(190) NOT NULL,
+    content       MEDIUMTEXT NOT NULL,
+    format        VARCHAR(10) NOT NULL DEFAULT 'markdown',
+    created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_ai_doc_license (license_id, created_at),
+    INDEX idx_ai_doc_user (user_id, created_at),
+    CONSTRAINT fk_ai_doc_generation FOREIGN KEY (generation_id) REFERENCES ai_generations(id) ON DELETE SET NULL,
+    CONSTRAINT fk_ai_doc_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_ai_doc_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Declaración de la institución sobre la autorización de los acudientes
+-- (Ley 1581 de 2012: datos de menores y datos sensibles)
+CREATE TABLE IF NOT EXISTS ai_consents (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    license_id  INT UNSIGNED NOT NULL,
+    user_id     INT UNSIGNED NULL,
+    version     VARCHAR(20) NOT NULL DEFAULT '1',
+    ip_hash     CHAR(64) NULL,
+    accepted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_consent (license_id, version),
+    CONSTRAINT fk_ai_consent_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

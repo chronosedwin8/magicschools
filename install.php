@@ -56,6 +56,35 @@ try {
         $out[] = 'Columna "payment_link" agregada a los planes.';
     }
 
+    // Migración: rol docente
+    $roleType = (string) $pdo->query("SELECT COLUMN_TYPE FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'role'")->fetchColumn();
+    if ($roleType !== '' && !str_contains($roleType, 'teacher')) {
+        $pdo->exec("ALTER TABLE users MODIFY COLUMN role ENUM('customer','admin','teacher') NOT NULL DEFAULT 'customer'");
+        $out[] = 'Rol "teacher" habilitado en usuarios.';
+    }
+
+    // Migración: el docente (license_members) se vincula a una cuenta
+    $hasMemberUser = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'license_members' AND COLUMN_NAME = 'user_id'")->fetchColumn();
+    if (!$hasMemberUser) {
+        $pdo->exec('ALTER TABLE license_members
+            ADD COLUMN user_id INT UNSIGNED NULL AFTER license_id,
+            ADD COLUMN activated_at DATETIME NULL,
+            ADD CONSTRAINT fk_members_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL');
+        $out[] = 'Columnas "user_id" y "activated_at" agregadas a los miembros de licencia.';
+    }
+
+    // Migración: cuotas de IA congeladas en la licencia
+    $hasQuota = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'licenses' AND COLUMN_NAME = 'ai_monthly_quota'")->fetchColumn();
+    if (!$hasQuota) {
+        $pdo->exec('ALTER TABLE licenses
+            ADD COLUMN ai_monthly_quota INT UNSIGNED NOT NULL DEFAULT 0 AFTER seats,
+            ADD COLUMN ai_member_quota INT UNSIGNED NOT NULL DEFAULT 0 AFTER ai_monthly_quota');
+        $out[] = 'Cuotas de IA agregadas a las licencias.';
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);

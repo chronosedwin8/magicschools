@@ -93,6 +93,24 @@ define('DB_PASS', '');
 define('PAYMENT_PROVIDER', 'Mercado Pago');
 
 // ---------------------------------------------------------------------------
+// Herramientas de IA (Google Gemini)
+// La clave viaja en la cabecera x-goog-api-key, nunca en la URL ni en los logs.
+// ---------------------------------------------------------------------------
+define('AI_PROVIDER', 'gemini');
+define('AI_API_KEY', '');   // clave de Google Gemini
+define('AI_MODEL_FAST', 'gemini-2.5-flash');   // herramientas del día a día
+define('AI_MODEL_SMART', 'gemini-2.5-pro');    // documentos largos (PIAR)
+define('AI_TIMEOUT', 180);                     // segundos de espera a la API
+define('AI_MAX_PENDING_SECONDS', 420);         // una generación colgada se marca como error
+
+// Precio por millón de tokens en dólares, para calcular el costo de cada generación.
+// Se usa en el panel de costos para verificar el margen.
+$AI_PRICES = [
+    'gemini-2.5-flash' => ['in' => 0.30, 'out' => 2.50],
+    'gemini-2.5-pro'   => ['in' => 1.25, 'out' => 10.00],
+];
+
+// ---------------------------------------------------------------------------
 // Planes / licencias (valores en COP)
 // ---------------------------------------------------------------------------
 define('CURRENCY', 'COP');
@@ -107,6 +125,9 @@ $PLANS = [
         'months'      => 12,
         'featured'    => false,
         'payment_link' => 'https://mpago.li/2QYmYxX',
+        // Herramientas de IA: generaciones al mes por licencia y tope por docente
+        'ai_monthly_quota' => 1500,
+        'ai_member_quota'  => 150,
         'features'    => [
             'Hasta 60 usuarios (docentes y directivos)',
             'Más de 80 herramientas de IA para docentes',
@@ -126,6 +147,8 @@ $PLANS = [
         'months'      => 12,
         'featured'    => true,
         'payment_link' => 'https://mpago.li/18fzoqq',
+        'ai_monthly_quota' => 7500,
+        'ai_member_quota'  => 200,
         'features'    => [
             'Hasta 250 usuarios en varias sedes',
             'Todo lo incluido en la Licencia Escuela',
