@@ -43,8 +43,16 @@ function ai_quota_check(array $license, array $user): ?string
     if (!license_is_usable($license)) {
         return 'La licencia de tu institución no está activa.';
     }
+
+    // El administrador del sitio usa todas las herramientas sin tope,
+    // pero su consumo sí se mide y aparece en el panel de costos.
+    $sinTope = is_admin($user);
+
     $quota = ai_quota_for($license);
     $period = ai_period();
+    if ($sinTope) {
+        $quota = ['license' => 0, 'member' => 0];
+    }
 
     if ($quota['license'] > 0) {
         $usada = (int) ai_usage((int) $license['id'], 0, $period)['generations'];

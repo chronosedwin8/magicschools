@@ -88,20 +88,60 @@ try {
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);
-    $st = $pdo->prepare('SELECT id, role FROM users WHERE email = ?');
+    $st = $pdo->prepare('SELECT id, role, institution FROM users WHERE email = ?');
     $st->execute([$adminEmail]);
     $admin = $st->fetch(PDO::FETCH_ASSOC);
+
     if (!$admin) {
         $pdo->prepare("INSERT INTO users (name, email, password_hash, role, institution, document_type, document_number)
                        VALUES (?, ?, ?, 'admin', ?, 'NIT', '-')")
             ->execute([ADMIN_NAME, $adminEmail, ADMIN_PASSWORD_HASH, 'Administración ' . BRAND_SHORT]);
         $out[] = 'Administrador ' . $adminEmail . ' creado.';
-    } elseif ($admin['role'] !== 'admin') {
-        $pdo->prepare("UPDATE users SET role = 'admin' WHERE id = ?")->execute([$admin['id']]);
-        $out[] = 'Usuario ' . $adminEmail . ' promovido a administrador.';
     } else {
+        if ($admin['role'] !== 'admin') {
+            $pdo->prepare("UPDATE users SET role = 'admin' WHERE id = ?")->execute([$admin['id']]);
+            $out[] = 'Usuario ' . $adminEmail . ' promovido a administrador.';
+        }
+        // Si la marca cambió, se actualiza el nombre que aparece en los documentos
+        if (str_starts_with((string) $admin['institution'], 'Administración ')
+            && $admin['institution'] !== 'Administración ' . BRAND_SHORT) {
+            $pdo->prepare('UPDATE users SET institution = ? WHERE id = ?')
+                ->execute(['Administración ' . BRAND_SHORT, $admin['id']]);
+            $out[] = 'Institución del administrador actualizada a "' . BRAND_SHORT . '".';
+        }
         $out[] = 'Administrador ' . $adminEmail . ' verificado.';
     }
+    // Licencia interna del administrador: le da acceso a todas las herramientas
+    // sin pasar por una compra. No afecta los informes de ventas (queda marcada).
+    $st = $pdo->prepare('SELECT id FROM users WHERE email = ?');
+    $st->execute([$adminEmail]);
+    $adminId = (int) $st->fetchColumn();
+    if ($adminId > 0) {
+        $st = $pdo->prepare("SELECT COUNT(*) FROM licenses WHERE user_id = ? AND status = 'active' AND expires_at > NOW()");
+        $st->execute([$adminId]);
+        if ((int) $st->fetchColumn() === 0) {
+            $ref = 'INTERNA-' . strtoupper(bin2hex(random_bytes(4)));
+            $pdo->prepare("INSERT INTO orders (reference, user_id, plan_code, plan_name, seats, amount, currency, status, status_detail, payment_method, paid_at)
+                           VALUES (?, ?, 'volumen', 'Licencia interna de administración', 25, 0, ?, 'approved', 'Acceso interno del administrador', 'interno', NOW())")
+                ->execute([$ref, $adminId, CURRENCY]);
+            $orderId = (int) $pdo->lastInsertId();
+
+            $alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            $clave = [];
+            for ($g = 0; $g < 4; $g++) {
+                $chunk = '';
+                for ($i = 0; $i < 4; $i++) {
+                    $chunk .= $alfabeto[random_int(0, strlen($alfabeto) - 1)];
+                }
+                $clave[] = $chunk;
+            }
+            $pdo->prepare("INSERT INTO licenses (order_id, user_id, plan_code, plan_name, license_key, seats, ai_monthly_quota, ai_member_quota, starts_at, expires_at, status)
+                           VALUES (?, ?, 'volumen', 'Licencia interna de administración', ?, 25, 1000000, 1000000, NOW(), DATE_ADD(NOW(), INTERVAL 60 MONTH), 'active')")
+                ->execute([$orderId, $adminId, implode('-', $clave)]);
+            $out[] = 'Licencia interna creada para el administrador (acceso a todas las herramientas).';
+        }
+    }
+
     $ok = true;
 } catch (PDOException $e) {
     $out[] = 'Error: ' . $e->getMessage();
