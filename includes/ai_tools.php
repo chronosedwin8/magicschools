@@ -443,6 +443,174 @@ function ai_tools(): array
             'title' => fn(array $in) => 'Guía: ' . $in['tema'],
         ],
 
+        // ------------------------------------------------------------------
+        'piar' => [
+            'name' => 'Plan de ajustes razonables (PIAR)', 'category' => 'apoyo', 'icon' => 'inclusion', 'color' => 'yellow',
+            'desc' => 'Apoya la construcción de ajustes para estudiantes con necesidades diversas.',
+            'tier' => 'smart', 'exports' => ['html', 'pdf', 'docx'],
+            'max_tokens' => 16000, 'thinking' => 2048, 'temperature' => 0.5,
+            'consent' => true,   // trata datos sensibles: exige la declaración de la institución
+            'fields' => [
+                ai_field('estudiante', 'Estudiante', 'text', ['required' => true, 'max' => 80, 'placeholder' => 'Nombre, iniciales o alias',
+                    'help' => 'El PIAR es un documento oficial que identifica al estudiante. Úsalo solo si tu institución cuenta con la autorización de la familia.']),
+                ai_field('grado', 'Grado', 'select', ['required' => true, 'options' => $grados]),
+                ai_field('edad', 'Edad', 'text', ['max' => 3, 'placeholder' => 'Ej. 9']),
+                ai_field('condiciones', '¿Qué caracteriza al estudiante?', 'checks', ['required' => true, 'options' => [
+                    'Discapacidad intelectual', 'Discapacidad física o motora', 'Discapacidad visual', 'Discapacidad auditiva',
+                    'Trastorno del espectro autista', 'Dificultades de aprendizaje', 'Déficit de atención o hiperactividad',
+                    'Dificultades emocionales o de conducta', 'Capacidades o talentos excepcionales',
+                    'Barreras por contexto social o familiar', 'Estudiante en proceso de inclusión por migración',
+                ]]),
+                ai_field('otra_condicion', 'Otra situación que debamos considerar', 'text', ['max' => 200]),
+                ai_field('nivel_apoyo', 'Nivel de apoyo que requiere', 'select', ['required' => true,
+                    'options' => ['Intermitente (apoyo ocasional)', 'Limitado (apoyo constante por periodos)', 'Extenso (apoyo diario en varias áreas)', 'Generalizado (apoyo permanente)']]),
+                ai_field('areas', 'Áreas donde necesita ajustes', 'checks', ['options' => $areas]),
+                ai_field('fortalezas', 'Fortalezas, gustos e intereses', 'textarea', ['max' => 1500,
+                    'help' => 'Lo que el estudiante hace bien y lo que lo motiva. Es la base de los ajustes.']),
+                ai_field('barreras', 'Barreras que observas en el aula', 'textarea', ['max' => 1500,
+                    'placeholder' => 'Ej. Se dispersa con el ruido, le cuesta copiar del tablero, no termina las evaluaciones en el tiempo dado']),
+                ai_field('contexto', 'Contexto familiar y escolar', 'textarea', ['max' => 1500]),
+                ai_field('valoracion', 'Valoración pedagógica que ya tengas', 'textarea', ['max' => 2000,
+                    'help' => 'Resultados, informes del equipo de apoyo o lo que hayas observado en el periodo.']),
+                ai_field('autorizacion', 'Autorización de la familia', 'check', ['required' => true,
+                    'text' => 'Declaro que la institución cuenta con la autorización de los padres o acudientes para tratar los datos de este estudiante, incluidos los datos sensibles, conforme a la Ley 1581 de 2012.',
+                    'error' => 'Debes declarar que cuentas con la autorización de la familia.']),
+            ],
+            'schema' => [
+                'type' => 'OBJECT',
+                'properties' => [
+                    'titulo' => ['type' => 'STRING'],
+                    'caracterizacion' => ['type' => 'OBJECT', 'properties' => [
+                        'fortalezas' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                        'intereses' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                        'barreras' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                    ]],
+                    'ajustes_por_area' => ['type' => 'ARRAY', 'items' => ['type' => 'OBJECT', 'properties' => [
+                        'area' => ['type' => 'STRING'],
+                        'objetivo' => ['type' => 'STRING'],
+                        'ajustes_de_ensenanza' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                        'ajustes_de_evaluacion' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                    ], 'required' => ['area', 'objetivo', 'ajustes_de_ensenanza']]],
+                    'apoyos_en_el_aula' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                    'acuerdos_familia' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                    'seguimiento' => ['type' => 'OBJECT', 'properties' => [
+                        'indicadores' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                        'periodicidad' => ['type' => 'STRING'],
+                        'responsables' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                    ]],
+                    'por_validar' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                ],
+                'required' => ['titulo', 'caracterizacion', 'ajustes_por_area', 'apoyos_en_el_aula'],
+            ],
+            'system' => fn() => ai_system_base('un equipo de apoyo pedagógico para la inclusión educativa') . "\n\n" .
+                "MARCO ESPECÍFICO\n" .
+                "- Decreto 1421 de 2017: el PIAR es el instrumento de los ajustes razonables en la educación inclusiva.\n" .
+                "- Ley 1618 de 2013 sobre los derechos de las personas con discapacidad.\n" .
+                "- Diseño Universal para el Aprendizaje: varias formas de representar, de participar y de demostrar lo aprendido.\n\n" .
+                "LÍMITES PROFESIONALES, SIN EXCEPCIÓN\n" .
+                "- No diagnosticas ni confirmas diagnósticos. No nombras medicamentos ni tratamientos clínicos.\n" .
+                "- No haces pronósticos sobre el futuro del estudiante.\n" .
+                "- No sugieres cambiar al estudiante de institución ni de modalidad educativa.\n" .
+                "- Usas lenguaje centrado en la persona: 'estudiante con discapacidad visual', nunca 'el ciego'.\n" .
+                "- Nada de etiquetas como lento, problemático o especial.\n\n" .
+                "CÓMO ESCRIBES\n" .
+                "- Los ajustes son concretos y aplicables por el docente de aula con los recursos de un colegio común.\n" .
+                "- Cada ajuste nace de una fortaleza o de una barrera que te describieron.\n" .
+                "- En 'por_validar' listas lo que el equipo debe confirmar antes de aplicar el plan.",
+            'user' => function (array $in, array $ctx) {
+                $t = ai_context_text($ctx) . "PLAN INDIVIDUAL DE AJUSTES RAZONABLES\n";
+                $t .= 'Estudiante: ' . $in['estudiante'] . "\n" . 'Grado: ' . $in['grado'] . "\n";
+                if ($in['edad'] !== '')           $t .= 'Edad: ' . $in['edad'] . "\n";
+                $t .= 'Caracterización: ' . ($in['condiciones'] ?: 'sin especificar') . "\n";
+                if ($in['otra_condicion'] !== '') $t .= 'Otra situación: ' . $in['otra_condicion'] . "\n";
+                $t .= 'Nivel de apoyo: ' . $in['nivel_apoyo'] . "\n";
+                $t .= 'Áreas por ajustar: ' . ($in['areas'] ?: 'todas las del grado') . "\n";
+                foreach (['fortalezas' => 'Fortalezas e intereses', 'barreras' => 'Barreras observadas',
+                          'contexto' => 'Contexto', 'valoracion' => 'Valoración pedagógica'] as $campo => $titulo) {
+                    $t .= "\n" . $titulo . ":\n<<<\n" . ($in[$campo] !== '' ? ai_quote($in[$campo]) : 'Sin información') . "\n>>>\n";
+                }
+                $t .= "\nSi un dato no fue entregado, escribe \"(por definir con el equipo)\" en vez de inventarlo.";
+                return $t;
+            },
+            'title' => fn(array $in) => 'PIAR: ' . $in['estudiante'] . ' (' . $in['grado'] . ')',
+        ],
+
+        // ------------------------------------------------------------------
+        'examen' => [
+            'name' => 'Generador de exámenes', 'category' => 'evaluacion', 'icon' => 'documento', 'color' => 'blue',
+            'desc' => 'Arma evaluaciones completas con varios tipos de pregunta y su solucionario.',
+            'tier' => 'fast', 'exports' => ['html', 'pdf', 'docx'],
+            'max_tokens' => 16000, 'thinking' => 1536,
+            'fields' => [
+                ai_field('tema', 'Tema o unidad a evaluar', 'text', ['required' => true, 'max' => 200, 'placeholder' => 'Ej. Sistema circulatorio']),
+                ai_field('area', 'Área', 'select', ['required' => true, 'options' => $areas]),
+                ai_field('grado', 'Grado', 'select', ['required' => true, 'options' => $grados]),
+                ai_field('tipos', 'Tipos de pregunta', 'checks', ['required' => true, 'options' => [
+                    'Selección múltiple', 'Falso o verdadero', 'Respuesta corta', 'Completar la frase',
+                    'Relacionar columnas', 'Pregunta abierta de desarrollo', 'Resolución de problemas',
+                ]]),
+                ai_field('cantidad', 'Total de preguntas', 'select', ['required' => true, 'options' => ['5', '10', '15', '20', '25', '30']]),
+                ai_field('dificultad', 'Nivel', 'select', ['required' => true, 'options' => ['Básico', 'Intermedio', 'Avanzado', 'Mezclado']]),
+                ai_field('tiempo', 'Tiempo previsto', 'select', ['options' => ['30 minutos', '45 minutos', '1 hora', '2 horas']]),
+                ai_field('fuente', 'Contenido visto en clase', 'textarea', ['max' => 5000,
+                    'help' => 'Opcional pero muy recomendable: si lo pegas, el examen evalúa exactamente lo que enseñaste.']),
+            ],
+            'schema' => [
+                'type' => 'OBJECT',
+                'properties' => [
+                    'titulo' => ['type' => 'STRING'],
+                    'instrucciones' => ['type' => 'STRING'],
+                    'puntaje_total' => ['type' => 'INTEGER'],
+                    'secciones' => ['type' => 'ARRAY', 'items' => ['type' => 'OBJECT', 'properties' => [
+                        'tipo' => ['type' => 'STRING'],
+                        'instruccion' => ['type' => 'STRING'],
+                        'preguntas' => ['type' => 'ARRAY', 'items' => ['type' => 'OBJECT', 'properties' => [
+                            'enunciado' => ['type' => 'STRING'],
+                            'opciones' => ['type' => 'ARRAY', 'items' => ['type' => 'STRING']],
+                            'respuesta' => ['type' => 'STRING'],
+                            'puntos' => ['type' => 'INTEGER'],
+                            'habilidad' => ['type' => 'STRING'],
+                        ], 'required' => ['enunciado', 'respuesta']]],
+                    ], 'required' => ['tipo', 'instruccion', 'preguntas']]],
+                ],
+                'required' => ['titulo', 'secciones'],
+            ],
+            'system' => fn() => ai_system_base('un docente colombiano experto en diseño de evaluaciones') . "\n\n" .
+                "REGLAS DE LOS ÍTEMS\n" .
+                "- Debes crear UNA SECCIÓN POR CADA TIPO pedido, sin omitir ninguno, con al menos 2 preguntas cada una.\n" .
+                "- La suma de preguntas de todas las secciones debe ser EXACTAMENTE el total solicitado.\n" .
+                "- Si el total no alcanza para todos los tipos, reduce las preguntas por sección, nunca elimines un tipo.\n" .
+                "- En selección múltiple: 4 opciones, una sola correcta, distractores plausibles basados en errores típicos.\n" .
+                "- Nunca uses \"todas las anteriores\" ni \"ninguna de las anteriores\".\n" .
+                "- No numeres las preguntas ni pongas letras a las opciones: eso lo pone el formato.\n" .
+                "- En 'respuesta' escribe la respuesta correcta completa; en selección múltiple, el texto de la opción correcta.\n" .
+                "- En las preguntas abiertas, 'respuesta' es la respuesta esperada que orienta al docente al calificar.\n" .
+                "- Asigna puntos a cada pregunta de modo que el total sea coherente con 'puntaje_total'.",
+            'user' => function (array $in, array $ctx) {
+                // El reparto por tipo se calcula aquí: pedirle la aritmética al modelo
+                // hacía que a veces omitiera un tipo completo.
+                $tipos = array_values(array_filter(array_map('trim', explode(',', (string) $in['tipos']))));
+                $total = max(1, (int) $in['cantidad']);
+                $n = max(1, count($tipos));
+                $base = intdiv($total, $n);
+                $resto = $total % $n;
+                $reparto = [];
+                foreach ($tipos as $i => $tipo) {
+                    $reparto[] = ($i + 1) . '. ' . $tipo . ': ' . ($base + ($i < $resto ? 1 : 0)) . ' preguntas';
+                }
+
+                return ai_context_text($ctx) .
+                "EXAMEN\nTema: " . $in['tema'] . "\nÁrea: " . $in['area'] . "\nGrado: " . $in['grado'] .
+                "\nTotal de preguntas: " . $total .
+                "\n\nSECCIONES OBLIGATORIAS, en este orden y con esta cantidad exacta:\n" . implode("\n", $reparto) .
+                "\n\nNivel: " . $in['dificultad'] . ($in['tiempo'] !== '' ? "\nTiempo: " . $in['tiempo'] : '') .
+                ($in['fuente'] !== ''
+                    ? "\n\nEvalúa exactamente este contenido:\n<<<\n" . ai_quote($in['fuente']) . "\n>>>"
+                    : "\n\nNo hay contenido base: usa el currículo estándar del grado y el área.");
+            },
+            'title' => fn(array $in) => 'Examen: ' . $in['tema'],
+        ],
+
         // --- Ajuste de un resultado anterior (no aparece en el catálogo) ---
         'refinar' => [
             'name' => 'Ajuste del documento', 'category' => 'apoyo', 'icon' => 'reescribir', 'color' => 'purple',
@@ -511,6 +679,19 @@ function ai_tool_categories(): array
 }
 
 /**
+ * Texto que llega del formulario: si no viene en UTF-8 (por ejemplo desde una
+ * consola o un copiado raro), se convierte en vez de descartarlo en silencio.
+ */
+function ai_normalize_text(mixed $value): string
+{
+    $text = is_scalar($value) ? (string) $value : '';
+    if ($text !== '' && !mb_check_encoding($text, 'UTF-8')) {
+        $text = mb_convert_encoding($text, 'UTF-8', 'Windows-1252');
+    }
+    return trim($text);
+}
+
+/**
  * Valida lo que envió el docente contra el esquema de campos de la herramienta.
  * @return array{0: array<string,string>, 1: string[]} valores limpios y errores
  */
@@ -519,11 +700,29 @@ function ai_validate_input(array $tool, array $post): array
     $clean = [];
     $errors = [];
     foreach ($tool['fields'] as $f) {
-        $raw = trim((string) ($post[$f['name']] ?? ''));
-        // Texto que no venga en UTF-8 se convierte en vez de romper la base de datos
-        if ($raw !== '' && !mb_check_encoding($raw, 'UTF-8')) {
-            $raw = mb_convert_encoding($raw, 'UTF-8', 'Windows-1252');
+
+        // Casillas múltiples: llegan como arreglo y se guardan como texto separado por comas
+        if ($f['type'] === 'checks') {
+            $recibidas = array_map('ai_normalize_text', (array) ($post[$f['name']] ?? []));
+            $marcadas = array_values(array_intersect($recibidas, $f['options']));
+            if (!$marcadas && !empty($f['required'])) {
+                $errors[] = 'Selecciona al menos una opción en "' . $f['label'] . '".';
+            }
+            $clean[$f['name']] = implode(', ', $marcadas);
+            continue;
         }
+
+        // Declaración que el docente debe marcar (autorizaciones)
+        if ($f['type'] === 'check') {
+            $marcada = !empty($post[$f['name']]);
+            if (!$marcada && !empty($f['required'])) {
+                $errors[] = $f['error'] ?? ('Debes confirmar "' . $f['label'] . '".');
+            }
+            $clean[$f['name']] = $marcada ? 'Sí' : '';
+            continue;
+        }
+
+        $raw = ai_normalize_text($post[$f['name']] ?? '');
         if ($f['type'] === 'select' && $raw !== '' && !in_array($raw, $f['options'], true)) {
             $errors[] = 'El valor de "' . $f['label'] . '" no es válido.';
             $raw = '';

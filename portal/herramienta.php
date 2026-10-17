@@ -10,6 +10,18 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 if (is_post()) {
     csrf_check();
 
+    // La institución declara que cuenta con la autorización de las familias
+    if (($_POST['action'] ?? '') === 'consent') {
+        $destino = ai_tool((string) ($_POST['h'] ?? '')) ? 'portal/herramienta.php?h=' . $_POST['h'] : 'portal/herramientas.php';
+        if (empty($_POST['declaro'])) {
+            flash('error', 'Debes marcar la declaración para continuar.');
+        } else {
+            ai_consent_record((int) $license['id'], (int) $user['id']);
+            flash('success', 'Declaración registrada. Ya puedes usar esta herramienta.');
+        }
+        redirect($destino);
+    }
+
     // Ajustar un documento ya generado (más corto, más simple, otro tono…)
     if (($_POST['action'] ?? '') === 'refine') {
         $previa = ai_generation((int) ($_POST['gen'] ?? 0), $user);
@@ -47,6 +59,11 @@ if (is_post()) {
     if (!$tool) {
         flash('error', 'Esa herramienta no existe.');
         redirect('portal/herramientas.php');
+    }
+
+    if (!empty($tool['consent']) && !ai_consent_given((int) $license['id'])) {
+        flash('error', 'Antes de usar esta herramienta, la institución debe registrar la declaración de autorización.');
+        redirect('portal/herramienta.php?h=' . $tool['slug']);
     }
 
     [$input, $errors] = ai_validate_input($tool, $_POST);
@@ -191,15 +208,59 @@ include __DIR__ . '/_top.php';
         </aside>
     </div>
 
+<?php elseif (!empty($tool['consent']) && !ai_consent_given((int) $license['id'])): ?>
+    <!-- Declaración previa ------------------------------------------------ -->
+    <section class="panel consent-gate">
+        <h2>Antes de usar esta herramienta</h2>
+        <p>Esta herramienta trata <strong>datos personales de un estudiante</strong>, y en el caso del PIAR también
+            <strong>datos sensibles</strong> relacionados con su condición. La Ley 1581 de 2012 exige autorización
+            previa, expresa e informada de los padres o acudientes.</p>
+        <ul class="checklist">
+            <li>La institución es la responsable de recoger y conservar esa autorización.</li>
+            <li>Escribe solo los datos necesarios para construir el documento.</li>
+            <li>Puedes usar iniciales o un alias en las herramientas que no exigen identificar al estudiante.</li>
+            <li>Los documentos quedan en el portal de tu institución y puedes borrarlos cuando quieras.</li>
+        </ul>
+        <form method="post">
+            <?= csrf_field() ?>
+            <input type="hidden" name="action" value="consent">
+            <input type="hidden" name="h" value="<?= e($tool['slug']) ?>">
+            <label class="check declaracion">
+                <input type="checkbox" name="declaro" value="1" required>
+                <span>Declaro que <?= e($license['institution'] ?? 'mi institución') ?> cuenta con la autorización de los
+                    padres o acudientes para tratar los datos de los estudiantes en estas herramientas, y que conoce el
+                    <a href="<?= e(url('legal.php#privacidad')) ?>" target="_blank">aviso de privacidad</a>.</span>
+            </label>
+            <button class="btn btn-primary btn-lg">Registrar la declaración y continuar</button>
+        </form>
+        <p class="muted small">Queda registrada con tu usuario, la fecha y la dirección IP. Se hace una sola vez por licencia.</p>
+    </section>
+
 <?php else: ?>
     <!-- Formulario ------------------------------------------------------- -->
     <form method="post" class="panel tool-form" novalidate>
         <?= csrf_field() ?>
         <input type="hidden" name="h" value="<?= e($tool['slug']) ?>">
         <?php foreach ($tool['fields'] as $f): ?>
-            <label>
-                <?= e($f['label']) ?><?php if (empty($f['required'])): ?> <span class="field-hint">(opcional)</span><?php endif; ?>
-                <?php if ($f['type'] === 'select'): ?>
+            <label class="<?= in_array($f['type'], ['checks', 'check'], true) ? 'field-group' : '' ?>">
+                <?php if ($f['type'] !== 'check'): ?>
+                    <?= e($f['label']) ?><?php if (empty($f['required'])): ?> <span class="field-hint">(opcional)</span><?php endif; ?>
+                <?php endif; ?>
+                <?php if ($f['type'] === 'checks'): ?>
+                    <div class="check-grid">
+                        <?php foreach ($f['options'] as $op): ?>
+                            <label class="check check-item">
+                                <input type="checkbox" name="<?= e($f['name']) ?>[]" value="<?= e($op) ?>">
+                                <span><?= e($op) ?></span>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                <?php elseif ($f['type'] === 'check'): ?>
+                    <label class="check declaracion">
+                        <input type="checkbox" name="<?= e($f['name']) ?>" value="1" <?= !empty($f['required']) ? 'required' : '' ?>>
+                        <span><?= e($f['text'] ?? $f['label']) ?></span>
+                    </label>
+                <?php elseif ($f['type'] === 'select'): ?>
                     <select name="<?= e($f['name']) ?>" <?= !empty($f['required']) ? 'required' : '' ?>>
                         <option value="">Selecciona…</option>
                         <?php foreach ($f['options'] as $op): ?>

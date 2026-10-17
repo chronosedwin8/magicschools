@@ -179,6 +179,89 @@ function ai_render_markdown(array $tool, array $data): string
             }
             break;
 
+        case 'piar':
+            $md .= '# ' . ($data['titulo'] ?? 'Plan Individual de Ajustes Razonables') . "\n\n";
+            $md .= "*Documento construido con apoyo de inteligencia artificial. Debe ser revisado, ajustado y aprobado "
+                 . "por el equipo docente, el equipo de apoyo y la familia antes de su aplicación (Decreto 1421 de 2017).*\n\n";
+
+            $car = (array) ($data['caracterizacion'] ?? []);
+            $md .= "## Caracterización del estudiante\n\n";
+            if (!empty($car['fortalezas'])) $md .= "### Fortalezas\n\n" . md_list((array) $car['fortalezas']);
+            if (!empty($car['intereses']))  $md .= "### Intereses\n\n" . md_list((array) $car['intereses']);
+            if (!empty($car['barreras']))   $md .= "### Barreras para el aprendizaje y la participación\n\n" . md_list((array) $car['barreras']);
+
+            $md .= "## Ajustes razonables por área\n\n";
+            foreach ((array) ($data['ajustes_por_area'] ?? []) as $a) {
+                $md .= '### ' . ($a['area'] ?? 'Área') . "\n\n";
+                if (!empty($a['objetivo'])) $md .= '**Objetivo:** ' . $a['objetivo'] . "\n\n";
+                if (!empty($a['ajustes_de_ensenanza'])) {
+                    $md .= "**Ajustes en la enseñanza**\n\n" . md_list((array) $a['ajustes_de_ensenanza']);
+                }
+                if (!empty($a['ajustes_de_evaluacion'])) {
+                    $md .= "**Ajustes en la evaluación**\n\n" . md_list((array) $a['ajustes_de_evaluacion']);
+                }
+            }
+
+            if (!empty($data['apoyos_en_el_aula'])) $md .= "## Apoyos en el aula\n\n" . md_list((array) $data['apoyos_en_el_aula']);
+            if (!empty($data['acuerdos_familia']))  $md .= "## Acuerdos con la familia\n\n" . md_list((array) $data['acuerdos_familia']);
+
+            $seg = (array) ($data['seguimiento'] ?? []);
+            if ($seg) {
+                $md .= "## Seguimiento\n\n";
+                if (!empty($seg['indicadores']))  $md .= md_list((array) $seg['indicadores']);
+                if (!empty($seg['periodicidad'])) $md .= '**Periodicidad:** ' . $seg['periodicidad'] . "\n\n";
+                if (!empty($seg['responsables'])) $md .= '**Responsables:** ' . implode(', ', (array) $seg['responsables']) . "\n\n";
+            }
+            if (!empty($data['por_validar'])) {
+                $md .= "## Por validar con el equipo\n\n" . md_list((array) $data['por_validar']);
+            }
+            $md .= "## Acta de acuerdo\n\n";
+            $md .= "Quienes firman conocen este plan, participaron en su construcción y se comprometen con su seguimiento.\n\n";
+            foreach (['Docente de aula', 'Docente de apoyo', 'Coordinación o rectoría', 'Familia o acudiente'] as $firma) {
+                $md .= '- ' . $firma . ": ______________________________   Fecha: ____________\n";
+            }
+            $md .= "\n";
+            break;
+
+        case 'examen':
+            $md .= '# ' . ($data['titulo'] ?? 'Evaluación') . "\n\n";
+            $md .= "Nombre: ______________________________________  Curso: __________  Fecha: ____________\n\n";
+            if (!empty($data['instrucciones'])) $md .= '*' . $data['instrucciones'] . "*\n\n";
+            if (!empty($data['puntaje_total'])) $md .= '**Puntaje total:** ' . (int) $data['puntaje_total'] . " puntos\n\n";
+
+            $letras = ['A', 'B', 'C', 'D', 'E', 'F'];
+            $clave = [];
+            $n = 0;
+            foreach ((array) ($data['secciones'] ?? []) as $s) {
+                $md .= '## ' . ($s['tipo'] ?? 'Sección') . "\n\n";
+                if (!empty($s['instruccion'])) $md .= '*' . $s['instruccion'] . "*\n\n";
+                foreach ((array) ($s['preguntas'] ?? []) as $q) {
+                    $n++;
+                    $pts = !empty($q['puntos']) ? ' *(' . (int) $q['puntos'] . ' pts)*' : '';
+                    $md .= '**' . $n . '.**' . $pts . ' ' . ($q['enunciado'] ?? '') . "\n\n";
+                    $opciones = (array) ($q['opciones'] ?? []);
+                    foreach ($opciones as $k => $op) {
+                        $md .= '- ' . ($letras[$k] ?? $k) . ') ' . $op . "\n";
+                    }
+                    if (!$opciones) {
+                        $md .= "_______________________________________________\n";
+                    }
+                    $md .= "\n";
+                    $resp = (string) ($q['respuesta'] ?? '');
+                    if ($opciones) {
+                        $i = array_search($resp, $opciones, true);
+                        if ($i !== false) {
+                            $resp = ($letras[$i] ?? '') . ') ' . $resp;
+                        }
+                    }
+                    $clave[] = $n . '. ' . $resp . (!empty($q['habilidad']) ? ' *(' . $q['habilidad'] . ')*' : '');
+                }
+            }
+            if ($clave) {
+                $md .= "## Solucionario (solo para el docente)\n\n" . md_list($clave, '');
+            }
+            break;
+
         case 'refinar':
             $contenido = trim((string) ($data['contenido'] ?? ''));
             // Si el modelo ya devolvió su propio título, no se duplica

@@ -167,3 +167,22 @@ function ai_generation(int $id, array $user): ?array
     }
     return db_one('SELECT * FROM ai_generations WHERE id = ? AND user_id = ?', [$id, $user['id']]);
 }
+
+/**
+ * Declaración de la institución sobre la autorización de los acudientes.
+ * La exigen las herramientas que tratan datos de estudiantes (Ley 1581 de 2012).
+ */
+function ai_consent_given(int $licenseId, string $version = '1'): bool
+{
+    return db_one('SELECT id FROM ai_consents WHERE license_id = ? AND version = ?', [$licenseId, $version]) !== null;
+}
+
+function ai_consent_record(int $licenseId, int $userId, string $version = '1'): void
+{
+    db_exec(
+        'INSERT INTO ai_consents (license_id, user_id, version, ip_hash) VALUES (?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE user_id = VALUES(user_id), accepted_at = NOW()',
+        [$licenseId, $userId, $version, hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '') . '|' . BRAND_NAME)]
+    );
+    app_log('ai', 'Declaración de autorización registrada', ['licencia' => $licenseId, 'usuario' => $userId]);
+}
