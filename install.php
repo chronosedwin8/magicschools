@@ -111,6 +111,14 @@ try {
         }
         $out[] = 'Administrador ' . $adminEmail . ' verificado.';
     }
+    // Migración: respuesta estructurada de la IA (para PowerPoint y re-render)
+    $hasJson = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'ai_generations' AND COLUMN_NAME = 'output_json'")->fetchColumn();
+    if (!$hasJson) {
+        $pdo->exec('ALTER TABLE ai_generations ADD COLUMN output_json MEDIUMTEXT NULL AFTER output_text');
+        $out[] = 'Columna "output_json" agregada a las generaciones.';
+    }
+
     // Licencia interna del administrador: le da acceso a todas las herramientas
     // sin pasar por una compra. No afecta los informes de ventas (queda marcada).
     $st = $pdo->prepare('SELECT id FROM users WHERE email = ?');

@@ -61,7 +61,7 @@ include __DIR__ . '/_top.php';
     <input type="search" name="q" value="<?= e($q) ?>" placeholder="Buscar por título">
     <select name="h">
         <option value="">Todas las herramientas</option>
-        <?php foreach (ai_tools() as $t): ?>
+        <?php foreach (ai_tools_visible() as $t): ?>
             <option value="<?= e($t['slug']) ?>" <?= $herramienta === $t['slug'] ? 'selected' : '' ?>><?= e($t['name']) ?></option>
         <?php endforeach; ?>
     </select>

@@ -9,6 +9,40 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 // --- Generar -----------------------------------------------------------------
 if (is_post()) {
     csrf_check();
+
+    // Ajustar un documento ya generado (más corto, más simple, otro tono…)
+    if (($_POST['action'] ?? '') === 'refine') {
+        $previa = ai_generation((int) ($_POST['gen'] ?? 0), $user);
+        $ajustes = [
+            'corto'     => ['más corto', 'Hazlo más corto, conservando lo esencial.'],
+            'simple'    => ['más simple', 'Simplifica el lenguaje para que sea más fácil de entender.'],
+            'detallado' => ['más detallado', 'Amplíalo con más detalle y ejemplos concretos.'],
+            'formal'    => ['tono formal', 'Dale un tono más formal e institucional.'],
+            'cercano'   => ['tono cercano', 'Dale un tono más cercano y cálido.'],
+            'familias'  => ['para las familias', 'Reescríbelo para que lo entiendan las familias, sin tecnicismos.'],
+        ];
+        $clave = (string) ($_POST['ajuste'] ?? '');
+        if (!$previa || $previa['status'] !== 'done' || !isset($ajustes[$clave])) {
+            flash('error', 'No pudimos aplicar ese ajuste.');
+            redirect('portal/herramientas.php');
+        }
+        if ($error = ai_quota_check($license, $user)) {
+            flash('error', $error);
+            redirect('portal/herramienta.php?gen=' . $previa['id']);
+        }
+
+        $tool = ai_tool('refinar');
+        $input = [
+            'texto'  => (string) $previa['output_text'],
+            'ajuste'   => $ajustes[$clave][1],
+            'base'     => mb_substr((string) ($previa['title'] ?: $previa['tool_name']), 0, 120),
+            'etiqueta' => $ajustes[$clave][0],
+        ];
+        $id = ai_start_generation($license, $user, $tool, $input, ($tool['title'])($input));
+        app_log('ai', 'Ajuste solicitado', ['origen' => $previa['id'], 'nuevo' => $id, 'ajuste' => $clave]);
+        ai_dispatch($id, $tool, $input, ai_build_context($user, $license), 'portal/herramienta.php?gen=' . $id);
+    }
+
     $tool = ai_tool((string) ($_POST['h'] ?? ''));
     if (!$tool) {
         flash('error', 'Esa herramienta no existe.');
@@ -103,13 +137,30 @@ include __DIR__ . '/_top.php';
         <article class="panel result-doc">
             <div class="result-actions">
                 <button type="button" class="btn btn-outline btn-sm" data-copy-doc>Copiar texto</button>
-                <a class="btn btn-outline btn-sm" href="<?= e(url('portal/descargar.php?gen=' . $gen['id'] . '&f=html')) ?>">Descargar HTML</a>
-                <?php if (in_array('pdf', (array) ($tool['exports'] ?? []), true)): ?>
-                    <a class="btn btn-outline btn-sm" href="<?= e(url('portal/descargar.php?gen=' . $gen['id'] . '&f=pdf')) ?>">Descargar PDF</a>
-                <?php endif; ?>
+                <?php
+                $etiquetas = ['pdf' => 'PDF', 'docx' => 'Word', 'pptx' => 'PowerPoint', 'html' => 'HTML'];
+                foreach ((array) ($tool['exports'] ?? ['html']) as $formato):
+                    if (!isset($etiquetas[$formato])) continue; ?>
+                    <a class="btn btn-outline btn-sm" href="<?= e(url('portal/descargar.php?gen=' . $gen['id'] . '&f=' . $formato)) ?>">
+                        <?= e($etiquetas[$formato]) ?></a>
+                <?php endforeach; ?>
                 <a class="btn btn-primary btn-sm" href="<?= e(url('portal/herramienta.php?h=' . $gen['tool_slug'])) ?>">Crear otro</a>
             </div>
             <div class="doc" id="doc"><?= md_to_html((string) $gen['output_text']) ?></div>
+
+            <div class="refine-bar">
+                <span class="refine-label">¿Quieres ajustarlo?</span>
+                <?php foreach (['corto' => 'Más corto', 'simple' => 'Más simple', 'detallado' => 'Más detallado',
+                                'formal' => 'Más formal', 'cercano' => 'Más cercano', 'familias' => 'Para las familias'] as $clave => $texto): ?>
+                    <form method="post">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="action" value="refine">
+                        <input type="hidden" name="gen" value="<?= (int) $gen['id'] ?>">
+                        <input type="hidden" name="ajuste" value="<?= e($clave) ?>">
+                        <button class="btn btn-ghost btn-sm"><?= e($texto) ?></button>
+                    </form>
+                <?php endforeach; ?>
+            </div>
             <p class="doc-note">Borrador generado con inteligencia artificial el <?= fecha($gen['created_at'], true) ?>.
                 Revísalo y ajústalo antes de usarlo en clase.</p>
         </article>

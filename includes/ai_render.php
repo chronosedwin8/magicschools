@@ -95,6 +95,102 @@ function ai_render_markdown(array $tool, array $data): string
             }
             break;
 
+        case 'presentacion':
+            $md .= '# ' . ($data['titulo'] ?? 'Presentación') . "\n\n";
+            $n = 0;
+            foreach ((array) ($data['diapositivas'] ?? []) as $d) {
+                $n++;
+                $md .= '## Diapositiva ' . $n . ': ' . ($d['titulo'] ?? '') . "\n\n";
+                $md .= md_list((array) ($d['puntos'] ?? []));
+                if (!empty($d['nota_docente']))    $md .= '**Para decir:** ' . $d['nota_docente'] . "\n\n";
+                if (!empty($d['imagen_sugerida'])) $md .= '*Imagen sugerida: ' . $d['imagen_sugerida'] . "*\n\n";
+            }
+            break;
+
+        case 'escritos':
+            $md .= "# Retroalimentación\n\n" . ($data['resumen'] ?? '') . "\n\n";
+            if (!empty($data['fortalezas'])) $md .= "## Lo que está bien logrado\n\n" . md_list((array) $data['fortalezas']);
+            if (!empty($data['mejoras'])) {
+                $md .= "## Qué puede mejorar\n\n";
+                foreach ((array) $data['mejoras'] as $m) {
+                    $md .= '### ' . ($m['aspecto'] ?? '') . "\n\n";
+                    if (!empty($m['ejemplo_del_texto'])) $md .= '*En su texto:* “' . $m['ejemplo_del_texto'] . "”\n\n";
+                    $md .= ($m['como_mejorarlo'] ?? '') . "\n\n";
+                }
+            }
+            if (!empty($data['comentario_para_entregar'])) {
+                $md .= "## Comentario para entregar\n\n" . $data['comentario_para_entregar'] . "\n\n";
+            }
+            if (!empty($data['siguiente_paso'])) $md .= "## Siguiente paso\n\n" . $data['siguiente_paso'] . "\n";
+            break;
+
+        case 'boletin':
+            $md .= "# Observación de desempeño\n\n" . ($data['observacion'] ?? '') . "\n\n";
+            if (!empty($data['version_breve']))      $md .= "## Versión breve para el boletín\n\n" . $data['version_breve'] . "\n\n";
+            if (!empty($data['fortalezas']))         $md .= "## Fortalezas\n\n" . md_list((array) $data['fortalezas']);
+            if (!empty($data['a_trabajar']))         $md .= "## Aspectos por trabajar\n\n" . md_list((array) $data['a_trabajar']);
+            if (!empty($data['sugerencia_familia'])) $md .= "## Sugerencia para la familia\n\n" . $data['sugerencia_familia'] . "\n";
+            break;
+
+        case 'reescribir':
+            $md .= '# ' . ($data['titulo'] ?? 'Texto adaptado') . "\n\n";
+            $md .= ($data['texto_adaptado'] ?? '') . "\n\n";
+            if (!empty($data['glosario'])) {
+                $md .= "## Glosario\n\n";
+                foreach ((array) $data['glosario'] as $g) {
+                    $md .= '- **' . ($g['palabra'] ?? '') . ':** ' . ($g['significado'] ?? '') . "\n";
+                }
+                $md .= "\n";
+            }
+            if (!empty($data['preguntas'])) $md .= "## Preguntas sobre la lectura\n\n" . md_list((array) $data['preguntas']);
+            if (!empty($data['que_cambio'])) $md .= "## Qué se ajustó\n\n" . $data['que_cambio'] . "\n";
+            break;
+
+        case 'rubrica':
+            $md .= '# ' . ($data['titulo'] ?? 'Rúbrica') . "\n\n";
+            $niveles = (array) ($data['niveles'] ?? []);
+            if ($niveles) {
+                $md .= '**Niveles de desempeño:** ' . implode(' · ', $niveles) . "\n\n";
+            }
+            foreach ((array) ($data['criterios'] ?? []) as $c) {
+                $peso = !empty($c['peso']) ? ' (' . $c['peso'] . ')' : '';
+                $md .= '## ' . ($c['nombre'] ?? 'Criterio') . $peso . "\n\n";
+                foreach ((array) ($c['descriptores'] ?? []) as $k => $desc) {
+                    $md .= '- **' . ($niveles[$k] ?? ('Nivel ' . ($k + 1))) . ':** ' . $desc . "\n";
+                }
+                $md .= "\n";
+            }
+            if (!empty($data['uso_sugerido'])) $md .= "## Cómo usarla\n\n" . $data['uso_sugerido'] . "\n";
+            break;
+
+        case 'pasos':
+            $md .= '# ' . ($data['titulo'] ?? 'Guía de trabajo') . "\n\n";
+            if (!empty($data['para_el_estudiante'])) $md .= ($data['para_el_estudiante']) . "\n\n";
+            if (!empty($data['lectura']))            $md .= "## Lectura\n\n" . $data['lectura'] . "\n\n";
+            $md .= "## Paso a paso\n\n";
+            foreach ((array) ($data['pasos'] ?? []) as $p) {
+                $min = !empty($p['minutos']) ? ' (' . (int) $p['minutos'] . ' min)' : '';
+                $md .= '**' . (int) ($p['numero'] ?? 0) . '.**' . $min . ' ' . ($p['instruccion'] ?? '') . "\n\n";
+            }
+            if (!empty($data['preguntas']))    $md .= "## Preguntas\n\n" . md_list((array) $data['preguntas']);
+            if (!empty($data['para_entregar'])) $md .= "## Qué debes entregar\n\n" . $data['para_entregar'] . "\n\n";
+            if (!empty($data['respuestas_orientadoras'])) {
+                $md .= "## Respuestas orientadoras (solo para el docente)\n\n" . md_list((array) $data['respuestas_orientadoras']);
+            }
+            break;
+
+        case 'refinar':
+            $contenido = trim((string) ($data['contenido'] ?? ''));
+            // Si el modelo ya devolvió su propio título, no se duplica
+            if (!str_starts_with($contenido, '# ')) {
+                $md .= '# ' . ($data['titulo'] ?? 'Documento ajustado') . "
+
+";
+            }
+            $md .= $contenido . "
+";
+            break;
+
         default:
             // Herramienta sin renderizador propio: se vuelca de forma legible
             foreach ($data as $k => $v) {
@@ -148,4 +244,51 @@ function ai_filename(string $title, string $ext): string
     $base = trim(preg_replace('/\s+/', '-', (string) $base), '-');
     $base = mb_substr($base !== '' ? $base : 'documento', 0, 60);
     return $base . '.' . $ext;
+}
+
+/**
+ * Descompone el Markdown en bloques simples. Lo usan las exportaciones a Word,
+ * que necesitan saber si cada línea es título, viñeta o párrafo.
+ * @return array<int, array{type:string, text:string}>
+ */
+function md_tokens(string $md): array
+{
+    $tokens = [];
+    foreach (preg_split('/\r\n|\r|\n/', $md) as $linea) {
+        $t = trim($linea);
+        if ($t === '') {
+            continue;
+        }
+        if (str_starts_with($t, '### '))    $tokens[] = ['type' => 'h3', 'text' => mb_substr($t, 4)];
+        elseif (str_starts_with($t, '## ')) $tokens[] = ['type' => 'h2', 'text' => mb_substr($t, 3)];
+        elseif (str_starts_with($t, '# '))  $tokens[] = ['type' => 'h1', 'text' => mb_substr($t, 2)];
+        elseif (str_starts_with($t, '- '))  $tokens[] = ['type' => 'li', 'text' => mb_substr($t, 2)];
+        else                                $tokens[] = ['type' => 'p',  'text' => $t];
+    }
+    return $tokens;
+}
+
+/**
+ * Parte un texto en fragmentos con y sin negrita, para Word.
+ * @return array<int, array{text:string, bold:bool, italic:bool}>
+ */
+function md_runs(string $text): array
+{
+    $runs = [];
+    $resto = $text;
+    while ($resto !== '') {
+        if (preg_match('/^(.*?)\*\*(.+?)\*\*(.*)$/su', $resto, $m)) {
+            if ($m[1] !== '') $runs[] = ['text' => $m[1], 'bold' => false, 'italic' => false];
+            $runs[] = ['text' => $m[2], 'bold' => true, 'italic' => false];
+            $resto = $m[3];
+        } elseif (preg_match('/^(.*?)\*(.+?)\*(.*)$/su', $resto, $m)) {
+            if ($m[1] !== '') $runs[] = ['text' => $m[1], 'bold' => false, 'italic' => false];
+            $runs[] = ['text' => $m[2], 'bold' => false, 'italic' => true];
+            $resto = $m[3];
+        } else {
+            $runs[] = ['text' => $resto, 'bold' => false, 'italic' => false];
+            $resto = '';
+        }
+    }
+    return $runs;
 }

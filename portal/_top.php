@@ -19,6 +19,7 @@ if (!isset($nav)) {
             'herramientas' => ['portal/herramientas.php', '✨', 'Herramientas'],
             'licencias'    => ['portal/licencias.php', '🎟️', 'Mis licencias'],
             'pedidos'      => ['portal/pedidos.php', '🧾', 'Pedidos y pagos'],
+            'consumo'      => ['portal/consumo.php', '📊', 'Consumo'],
             'cuenta'       => ['portal/cuenta.php', '👤', 'Mi cuenta'],
         ];
 }

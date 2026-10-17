@@ -6,7 +6,7 @@ require_once __DIR__ . '/../includes/bootstrap.php';
 
 [$user, $license] = require_tools_access();
 
-$tools = ai_tools();
+$tools = ai_tools_visible();
 $categorias = ai_tool_categories();
 $quota = ai_quota_for($license);
 $usoMio = (int) ai_usage((int) $license['id'], (int) $user['id'])['generations'];

@@ -47,3 +47,17 @@
     .result-layout { grid-template-columns: 1fr; }
     .result-side { position: static; }
 }
+
+/* Barra de ajustes sobre un resultado */
+.refine-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
+.refine-bar form { margin: 0; }
+.refine-label { font-weight: 600; font-size: .88rem; color: var(--ink-2); margin-right: 4px; }
+.refine-bar .btn { border: 1px solid var(--line); }
+.refine-bar .btn:hover { border-color: var(--primary); }
+
+/* Barras del panel de consumo */
+.bar-row { display: grid; grid-template-columns: 1fr 120px 36px; gap: 12px; align-items: center; padding: 8px 0; font-size: .9rem; }
+.bar { height: 8px; background: var(--primary-50); border-radius: 999px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--grad); border-radius: 999px; }
+.bar-row strong { text-align: right; font-family: var(--font-head); }
+@media (max-width: 560px) { .bar-row { grid-template-columns: 1fr 70px 32px; } }

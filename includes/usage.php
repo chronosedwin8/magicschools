@@ -98,10 +98,11 @@ function ai_start_generation(array $license, array $user, array $tool, array $in
 function ai_finish_generation(int $id, array $result, string $text, string $format = 'markdown'): void
 {
     db_exec(
-        'UPDATE ai_generations SET status = "done", output_text = ?, output_format = ?, model = ?,
+        'UPDATE ai_generations SET status = "done", output_text = ?, output_json = ?, output_format = ?, model = ?,
                 prompt_tokens = ?, output_tokens = ?, cost_micro_usd = ?, finished_at = NOW()
           WHERE id = ? AND status = "pending"',
-        [$text, $format, $result['model'], $result['prompt_tokens'], $result['output_tokens'], $result['cost_micro'], $id]
+        [$text, json_encode($result['data'] ?? null, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE),
+         $format, $result['model'], $result['prompt_tokens'], $result['output_tokens'], $result['cost_micro'], $id]
     );
     $gen = db_one('SELECT license_id, user_id FROM ai_generations WHERE id = ?', [$id]);
     if ($gen) {

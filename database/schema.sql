@@ -134,6 +134,7 @@ CREATE TABLE IF NOT EXISTS ai_generations (
     title          VARCHAR(190) NULL,
     input_json     MEDIUMTEXT NULL,
     output_text    MEDIUMTEXT NULL,
+    output_json    MEDIUMTEXT NULL,
     output_format  VARCHAR(10) NOT NULL DEFAULT 'markdown',
     model          VARCHAR(60) NULL,
     prompt_tokens  INT UNSIGNED NOT NULL DEFAULT 0,

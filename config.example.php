@@ -97,7 +97,7 @@ define('PAYMENT_PROVIDER', 'Mercado Pago');
 // La clave viaja en la cabecera x-goog-api-key, nunca en la URL ni en los logs.
 // ---------------------------------------------------------------------------
 define('AI_PROVIDER', 'gemini');
-define('AI_API_KEY', '');   // clave de Google Gemini
+define('AI_API_KEY', '');
 define('AI_MODEL_FAST', 'gemini-2.5-flash');   // herramientas del día a día
 define('AI_MODEL_SMART', 'gemini-2.5-pro');    // documentos largos (PIAR)
 define('AI_TIMEOUT', 180);                     // segundos de espera a la API
@@ -109,6 +109,18 @@ $AI_PRICES = [
     'gemini-2.5-flash' => ['in' => 0.30, 'out' => 2.50],
     'gemini-2.5-pro'   => ['in' => 1.25, 'out' => 10.00],
 ];
+
+// ---------------------------------------------------------------------------
+// Tutor con avatar (Tavus). Se activa en la fase 4.
+// El cobro corre por minuto desde que se crea la conversación, así que los
+// topes y el corte por inactividad no son opcionales.
+// ---------------------------------------------------------------------------
+define('TAVUS_API_KEY', '');                 // clave de Tavus
+define('TAVUS_REPLICA_ID', 'r72f7f7f7c8b');  // avatar "Daniel"
+define('TAVUS_PERSONA_ID', '');              // se crea con el script de preparación
+define('TAVUS_MAX_MINUTES', 15);             // duración máxima de una conversación
+define('TAVUS_IDLE_SECONDS', 120);           // 2 min sin interacción cierran la llamada
+define('TAVUS_MONTHLY_BUDGET_MIN', 300);     // tope de minutos al mes para todo el sitio
 
 // ---------------------------------------------------------------------------
 // Planes / licencias (valores en COP)

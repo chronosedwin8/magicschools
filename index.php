@@ -4,20 +4,12 @@ require_once __DIR__ . '/includes/bootstrap.php';
 $pageTitle = BRAND_NAME . ' | Inteligencia artificial segura para colegios';
 $bodyClass = 'page-home';
 
-$tools = [
-    ['cat' => 'planeacion', 'icon' => 'presentacion', 'color' => 'purple', 'name' => 'Generador de presentaciones', 'desc' => 'Crea diapositivas completas para tu clase a partir de un tema, un texto o un video.'],
-    ['cat' => 'planeacion', 'icon' => 'plan', 'color' => 'pink',   'name' => 'Plan de clase',               'desc' => 'Diseña planes de clase alineados a estándares y DBA en pocos minutos.'],
-    ['cat' => 'evaluacion', 'icon' => 'escritos', 'color' => 'orange', 'name' => 'Retroalimentación de escritos', 'desc' => 'Ofrece comentarios específicos y accionables sobre los textos de tus estudiantes.'],
-    ['cat' => 'planeacion', 'icon' => 'idea', 'color' => 'yellow', 'name' => 'Generador de ideas',          'desc' => 'Lluvia de ideas para actividades, proyectos y dinámicas de aula.'],
-    ['cat' => 'comunicacion','icon' => 'boletin', 'color' => 'green', 'name' => 'Observaciones de boletín',    'desc' => 'Redacta observaciones de desempeño claras, personalizadas y respetuosas.'],
-    ['cat' => 'evaluacion', 'icon' => 'quiz', 'color' => 'blue',   'name' => 'Quiz de selección múltiple',   'desc' => 'Genera evaluaciones con clave de respuestas desde cualquier contenido.'],
-    ['cat' => 'apoyo',      'icon' => 'tutor', 'color' => 'purple', 'name' => 'Tutor de IA',                 'desc' => 'Un tutor paciente que guía al estudiante sin darle las respuestas.'],
-    ['cat' => 'apoyo',      'icon' => 'reescribir', 'color' => 'pink',   'name' => 'Reescritor de textos',        'desc' => 'Adapta lecturas a distintos niveles de complejidad y necesidades.'],
-    ['cat' => 'evaluacion', 'icon' => 'rubrica', 'color' => 'orange', 'name' => 'Generador de rúbricas',       'desc' => 'Construye rúbricas con criterios y niveles de desempeño detallados.'],
-    ['cat' => 'apoyo',      'icon' => 'inclusion', 'color' => 'yellow', 'name' => 'Plan de ajustes razonables (PIAR)', 'desc' => 'Apoya la construcción de ajustes para estudiantes con necesidades diversas.'],
-    ['cat' => 'planeacion', 'icon' => 'pasos', 'color' => 'green',  'name' => 'Tareas por pasos',            'desc' => 'Crea guías de trabajo con lectura, preguntas y actividades secuenciadas.'],
-    ['cat' => 'comunicacion','icon' => 'correo', 'color' => 'blue',  'name' => 'Correo profesional',          'desc' => 'Escribe mensajes a familias y colegas con el tono adecuado.'],
-];
+// Las herramientas se leen del catálogo real del portal: una sola fuente
+$tools = array_map(static fn(array $t): array => [
+    'cat' => $t['category'], 'icon' => $t['icon'], 'color' => $t['color'],
+    'name' => $t['name'], 'desc' => $t['desc'],
+], array_values(ai_tools_visible()));
+
 
 $faqs = [
     ['¿Qué incluye la licencia institucional?', 'Acceso a toda la plataforma para el número de usuarios de tu plan durante 12 meses: herramientas para docentes, espacios para estudiantes, panel de administración, capacitación inicial y soporte.'],
