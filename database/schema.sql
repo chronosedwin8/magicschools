@@ -214,3 +214,53 @@ CREATE TABLE IF NOT EXISTS data_requests (
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_data_requests_status (status, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Sesiones del tutor con avatar (Tavus).
+-- Tavus cobra por minuto desde que se crea la conversación, así que cada sesión
+-- se registra, se vigila y se cierra sola.
+CREATE TABLE IF NOT EXISTS tutor_sessions (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    license_id      INT UNSIGNED NOT NULL,
+    user_id         INT UNSIGNED NULL,
+    conversation_id VARCHAR(80) NULL,
+    conversation_url VARCHAR(500) NULL,
+    status          ENUM('reserved','live','ending','ended','failed') NOT NULL DEFAULT 'reserved',
+    topic           VARCHAR(190) NULL,
+    max_seconds     INT UNSIGNED NOT NULL DEFAULT 900,
+    started_at      DATETIME NULL,
+    last_beat_at    DATETIME NULL,
+    ended_at        DATETIME NULL,
+    billed_seconds  INT UNSIGNED NOT NULL DEFAULT 0,
+    cost_micro_usd  BIGINT UNSIGNED NOT NULL DEFAULT 0,
+    end_reason      VARCHAR(40) NULL,
+    error           VARCHAR(255) NULL,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_tutor_status (status, created_at),
+    INDEX idx_tutor_license (license_id, created_at),
+    CONSTRAINT fk_tutor_license FOREIGN KEY (license_id) REFERENCES licenses(id) ON DELETE CASCADE,
+    CONSTRAINT fk_tutor_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ajustes de operación que el administrador cambia desde el panel
+-- (interruptor del tutor, presupuesto mensual de minutos, etc.).
+CREATE TABLE IF NOT EXISTS app_settings (
+    name       VARCHAR(60) NOT NULL PRIMARY KEY,
+    value      VARCHAR(255) NOT NULL,
+    updated_by INT UNSIGNED NULL,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Ayudas de IA dentro de los formularios (mejorar redacción / redactar desde apuntes).
+-- No son documentos: se registran aparte para medir su costo y limitar su uso.
+CREATE TABLE IF NOT EXISTS ai_assists (
+    id             INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    license_id     INT UNSIGNED NOT NULL,
+    user_id        INT UNSIGNED NOT NULL,
+    tool_slug      VARCHAR(40) NOT NULL,
+    field_name     VARCHAR(40) NOT NULL,
+    mode           ENUM('mejorar','crear') NOT NULL,
+    cost_micro_usd INT UNSIGNED NOT NULL DEFAULT 0,
+    created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_assist_user (user_id, created_at),
+    INDEX idx_assist_license (license_id, created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

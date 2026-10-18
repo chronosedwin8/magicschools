@@ -50,6 +50,10 @@ include __DIR__ . '/../portal/_top.php';
             'featured' => !empty($_POST['featured']),
             'features' => preg_split('/\r\n|\r|\n/', (string) ($_POST['features'] ?? '')),
             'payment_link' => $_POST['payment_link'] ?? '',
+            'ai_monthly_quota' => (int) ($_POST['ai_monthly_quota'] ?? 0),
+            'ai_member_quota' => (int) ($_POST['ai_member_quota'] ?? 0),
+            'tutor_minutes' => (int) ($_POST['tutor_minutes'] ?? 0),
+            'tutor_member_minutes' => (int) ($_POST['tutor_member_minutes'] ?? 0),
         ]) : $p;
     ?>
     <form class="panel plan-edit" method="post">
@@ -100,6 +104,21 @@ include __DIR__ . '/../portal/_top.php';
             <label>Usuarios incluidos<input type="number" name="seats" id="seats-<?= e($code) ?>" min="1" max="100000" required value="<?= (int) $v['seats'] ?>"></label>
             <label>Vigencia (meses)<input type="number" name="months" min="1" max="60" required value="<?= (int) $v['months'] ?>"></label>
         </div>
+        <div class="form-row">
+            <label>Generaciones de IA al mes <span class="field-hint">(toda la licencia)</span>
+                <input type="number" name="ai_monthly_quota" min="1" max="1000000" required value="<?= (int) ($v['ai_monthly_quota'] ?? 0) ?>"></label>
+            <label>Tope por docente <span class="field-hint">(0 = sin tope individual)</span>
+                <input type="number" name="ai_member_quota" min="0" max="1000000" required value="<?= (int) ($v['ai_member_quota'] ?? 0) ?>"></label>
+        </div>
+        <div class="form-row">
+            <label>Minutos de tutor al mes <span class="field-hint">(0 = el plan no incluye tutor)</span>
+                <input type="number" name="tutor_minutes" min="0" max="100000" required value="<?= (int) ($v['tutor_minutes'] ?? 0) ?>"></label>
+            <label>Minutos por docente <span class="field-hint">(no puede superar los de la licencia)</span>
+                <input type="number" name="tutor_member_minutes" min="0" max="100000" required value="<?= (int) ($v['tutor_member_minutes'] ?? 0) ?>"></label>
+        </div>
+        <p class="small muted">Cada minuto de tutor cuesta US$ <?= e(number_format(TAVUS_COST_PER_MIN_USD, 2, ',', '.')) ?>; es lo más caro del plan.
+            Revisa el efecto en <a href="<?= e(url('admin/costos.php')) ?>">Costos y margen</a> antes de subirlos.</p>
+
         <label>Características <span class="field-hint">(una por línea; se muestran en la tarjeta de precios)</span>
             <textarea name="features" rows="7"><?= e(implode("\n", $v['features'])) ?></textarea>
         </label>

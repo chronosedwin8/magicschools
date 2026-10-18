@@ -23,7 +23,7 @@
                         </a>
                         <a href="<?= e($home) ?>#soluciones" class="dropdown-item">
                             <span class="dd-icon dd-pink">🍎</span>
-                            <span><strong>IA para docentes</strong><small>Más de 80 herramientas para planear y evaluar</small></span>
+                            <span><strong>IA para docentes</strong><small><?= count(ai_tools_visible()) ?> herramientas para planear, evaluar y comunicar</small></span>
                         </a>
                         <a href="<?= e($home) ?>#soluciones" class="dropdown-item">
                             <span class="dd-icon dd-orange">🎒</span>

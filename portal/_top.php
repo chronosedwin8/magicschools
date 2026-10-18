@@ -12,11 +12,13 @@ if (!isset($nav)) {
         ? [
             'herramientas' => ['portal/herramientas.php', '✨', 'Herramientas'],
             'documentos'   => ['portal/documentos.php', '📁', 'Mis documentos'],
+            'tutor'        => ['portal/tutor.php', '🎥', 'Tutor con avatar'],
             'cuenta'       => ['portal/cuenta.php', '👤', 'Mi cuenta'],
         ]
         : [
             'inicio'       => ['portal/', '🏠', 'Inicio'],
             'herramientas' => ['portal/herramientas.php', '✨', 'Herramientas'],
+            'tutor'        => ['portal/tutor.php', '🎥', 'Tutor con avatar'],
             'licencias'    => ['portal/licencias.php', '🎟️', 'Mis licencias'],
             'pedidos'      => ['portal/pedidos.php', '🧾', 'Pedidos y pagos'],
             'consumo'      => ['portal/consumo.php', '📊', 'Consumo'],

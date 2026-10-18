@@ -14,6 +14,7 @@ $nav = [
     'clientes'  => ['admin/clientes.php', '🏫', 'Clientes'],
     'precios'   => ['admin/precios.php', '💲', 'Precios y planes'],
     'costos'    => ['admin/costos.php', '📈', 'Costos y margen'],
+    'tutor'     => ['admin/tutor.php', '🎥', 'Tutor con avatar'],
     'contactos' => ['admin/contactos.php', '✉️', 'Solicitudes de contacto'],
     'datos'     => ['admin/datos.php', '🛡️', 'Datos personales'],
     'cuenta'    => ['portal/cuenta.php', '👤', 'Mi cuenta'],

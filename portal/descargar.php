@@ -29,10 +29,12 @@ $meta = [
 
 switch ($formato) {
     case 'pdf':
-        export_pdf(export_document_html($titulo, $markdown, $meta), ai_filename($titulo, 'pdf'));
+        // PDF, Word y PowerPoint no ejecutan JavaScript: las fórmulas de LaTeX
+        // se convierten antes a símbolos reales (√, π, ², ≤).
+        export_pdf(export_document_html($titulo, tex_to_unicode($markdown), $meta, false), ai_filename($titulo, 'pdf'));
 
     case 'docx':
-        export_docx($markdown, $titulo, $meta, ai_filename($titulo, 'docx'));
+        export_docx(tex_to_unicode($markdown), $titulo, $meta, ai_filename($titulo, 'docx'));
 
     case 'pptx':
         $datos = json_decode((string) $gen['output_json'], true);
@@ -41,7 +43,7 @@ switch ($formato) {
             flash('warning', 'Este documento se generó antes de que existiera la exportación a PowerPoint. Vuelve a generarlo para descargarlo en ese formato.');
             redirect('portal/herramienta.php?gen=' . $gen['id']);
         }
-        export_pptx($datos, $titulo, $meta, ai_filename($titulo, 'pptx'));
+        export_pptx(tex_to_unicode_deep($datos), $titulo, $meta, ai_filename($titulo, 'pptx'));
 
     default:
         header('Content-Type: text/html; charset=utf-8');

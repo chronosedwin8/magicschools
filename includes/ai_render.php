@@ -275,6 +275,12 @@ function ai_render_markdown(array $tool, array $data): string
             break;
 
         default:
+            // Herramientas del segundo bloque
+            $extra = ai_render_extra((string) $tool['slug'], $data);
+            if ($extra !== null) {
+                return trim($extra) . "
+";
+            }
             // Herramienta sin renderizador propio: se vuelca de forma legible
             foreach ($data as $k => $v) {
                 $md .= '## ' . ucfirst(str_replace('_', ' ', (string) $k)) . "\n\n";

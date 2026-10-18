@@ -39,6 +39,11 @@ function apply_plan_overrides(): void
             'months'   => (int) $r['months'],
             'featured' => (bool) $r['featured'],
             'features' => is_array($features) ? $features : $PLANS[$r['code']]['features'],
+            'ai_monthly_quota' => (int) ($r['ai_monthly_quota'] ?? 0) ?: ($PLANS[$r['code']]['ai_monthly_quota'] ?? 0),
+            'ai_member_quota'  => (int) ($r['ai_member_quota'] ?? 0) ?: ($PLANS[$r['code']]['ai_member_quota'] ?? 0),
+            // Los minutos del tutor sí pueden ser 0: es como se apaga en un plan.
+            'tutor_minutes'        => isset($r['tutor_minutes']) ? (int) $r['tutor_minutes'] : ($PLANS[$r['code']]['tutor_minutes'] ?? 0),
+            'tutor_member_minutes' => isset($r['tutor_member_minutes']) ? (int) $r['tutor_member_minutes'] : ($PLANS[$r['code']]['tutor_member_minutes'] ?? 0),
             'payment_link' => (string) ($r['payment_link'] ?? '') !== ''
                 ? (string) $r['payment_link']
                 : ($PLANS[$r['code']]['payment_link'] ?? ''),
@@ -70,6 +75,10 @@ function save_plan(string $code, array $input, int $adminId): array
     $months = (int) ($input['months'] ?? 0);
     $features = array_values(array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', (string) ($input['features'] ?? ''))), 'strlen'));
     $link = trim((string) ($input['payment_link'] ?? ''));
+    $gens = (int) ($input['ai_monthly_quota'] ?? 0);
+    $gensDoc = (int) ($input['ai_member_quota'] ?? 0);
+    $min = (int) ($input['tutor_minutes'] ?? 0);
+    $minDoc = (int) ($input['tutor_member_minutes'] ?? 0);
 
     if ($name === '' || mb_strlen($name) > 100)   $errors[] = 'El nombre es obligatorio (máx. 100 caracteres).';
     if (mb_strlen($tagline) > 200)                 $errors[] = 'La descripción corta admite máximo 200 caracteres.';
@@ -86,21 +95,30 @@ function save_plan(string $code, array $input, int $adminId): array
     if ($months < 1 || $months > 60)               $errors[] = 'La vigencia debe estar entre 1 y 60 meses.';
     if (!$features)                                $errors[] = 'Escribe al menos una característica.';
     if (count($features) > 20)                     $errors[] = 'Máximo 20 características.';
+    if ($gens < 1 || $gens > 1000000)              $errors[] = 'Las generaciones al mes deben estar entre 1 y 1.000.000.';
+    if ($gensDoc < 0 || $gensDoc > $gens)          $errors[] = 'El tope por docente no puede superar las generaciones de la licencia.';
+    if ($min < 0 || $min > 100000)                 $errors[] = 'Los minutos de tutor deben estar entre 0 y 100.000.';
+    if ($minDoc < 0 || $minDoc > max(1, $min))     $errors[] = 'Los minutos por docente no pueden superar los de la licencia.';
     if ($errors) {
         return $errors;
     }
 
     db_exec(
-        'INSERT INTO plan_settings (code, name, tagline, price, seats, months, featured, features, payment_link, updated_by)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        'INSERT INTO plan_settings (code, name, tagline, price, seats, months, featured, features, payment_link,
+                ai_monthly_quota, ai_member_quota, tutor_minutes, tutor_member_minutes, updated_by)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON DUPLICATE KEY UPDATE name = VALUES(name), tagline = VALUES(tagline), price = VALUES(price),
              seats = VALUES(seats), months = VALUES(months), featured = VALUES(featured),
              features = VALUES(features), payment_link = VALUES(payment_link),
+             ai_monthly_quota = VALUES(ai_monthly_quota), ai_member_quota = VALUES(ai_member_quota),
+             tutor_minutes = VALUES(tutor_minutes), tutor_member_minutes = VALUES(tutor_member_minutes),
              updated_by = VALUES(updated_by), updated_at = NOW()',
         [$code, $name, $tagline, $price, $seats, $months, !empty($input['featured']) ? 1 : 0,
-         json_encode(array_map(fn($f) => mb_substr($f, 0, 150), $features), JSON_UNESCAPED_UNICODE), $link, $adminId]
+         json_encode(array_map(fn($f) => mb_substr($f, 0, 150), $features), JSON_UNESCAPED_UNICODE), $link,
+         $gens, $gensDoc, $min, $minDoc, $adminId]
     );
-    app_log('admin', 'Plan actualizado', ['plan' => $code, 'price' => $price, 'seats' => $seats, 'months' => $months, 'link' => $link, 'admin' => $adminId]);
+    app_log('admin', 'Plan actualizado', ['plan' => $code, 'price' => $price, 'seats' => $seats, 'months' => $months,
+        'link' => $link, 'gens' => $gens, 'tutor_min' => $min, 'admin' => $adminId]);
     return [];
 }
 

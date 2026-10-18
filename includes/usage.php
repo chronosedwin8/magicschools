@@ -150,9 +150,9 @@ function ai_add_usage(int $licenseId, int $userId, array $result, bool $countGen
 }
 
 /** Una generación que quedó colgada se marca como error (la llama la página de estado). */
-function ai_expire_stale(): void
+function ai_expire_stale(): int
 {
-    db_exec(
+    return db_exec(
         'UPDATE ai_generations SET status = "error", error = "La generación tardó demasiado y se canceló.", finished_at = NOW()
           WHERE status = "pending" AND created_at < NOW() - INTERVAL ? SECOND',
         [AI_MAX_PENDING_SECONDS]

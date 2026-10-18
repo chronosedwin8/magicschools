@@ -101,10 +101,16 @@ function apply_payment(array $payment): ?array
 
             $plan = plan($order['plan_code']);
             $months = $plan['months'] ?? 12;
+            // Las cuotas del plan se congelan en la licencia: cambiar un plan más
+            // adelante no debe alterar lo que ya se le vendió a un cliente.
             db_exec(
-                'INSERT INTO licenses (order_id, user_id, plan_code, plan_name, license_key, seats, starts_at, expires_at, status)
-                 VALUES (?, ?, ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? MONTH), "active")',
-                [$order['id'], $order['user_id'], $order['plan_code'], $order['plan_name'], generate_license_key(), $order['seats'], $months]
+                'INSERT INTO licenses (order_id, user_id, plan_code, plan_name, license_key, seats,
+                        ai_monthly_quota, ai_member_quota, tutor_monthly_minutes, tutor_member_minutes,
+                        starts_at, expires_at, status)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? MONTH), "active")',
+                [$order['id'], $order['user_id'], $order['plan_code'], $order['plan_name'], generate_license_key(), $order['seats'],
+                 (int) ($plan['ai_monthly_quota'] ?? 0), (int) ($plan['ai_member_quota'] ?? 0),
+                 (int) ($plan['tutor_minutes'] ?? 0), (int) ($plan['tutor_member_minutes'] ?? 0), $months]
             );
         } else {
             $mapped = match ($status) {

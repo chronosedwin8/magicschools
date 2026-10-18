@@ -85,6 +85,27 @@ try {
         $out[] = 'Cuotas de IA agregadas a las licencias.';
     }
 
+    // Migración: minutos del tutor con avatar congelados en la licencia
+    $hasTutorMin = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'licenses' AND COLUMN_NAME = 'tutor_monthly_minutes'")->fetchColumn();
+    if (!$hasTutorMin) {
+        $pdo->exec('ALTER TABLE licenses
+            ADD COLUMN tutor_monthly_minutes INT UNSIGNED NOT NULL DEFAULT 0 AFTER ai_member_quota,
+            ADD COLUMN tutor_member_minutes INT UNSIGNED NOT NULL DEFAULT 0 AFTER tutor_monthly_minutes');
+        $out[] = 'Minutos del tutor agregados a las licencias.';
+    }
+
+    // Migración: cuotas y minutos editables por plan desde el panel
+    $hasPlanQuota = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'plan_settings' AND COLUMN_NAME = 'ai_monthly_quota'")->fetchColumn();
+    if (!$hasPlanQuota) {
+        $pdo->exec('ALTER TABLE plan_settings
+            ADD COLUMN ai_monthly_quota INT UNSIGNED NOT NULL DEFAULT 0 AFTER seats,
+            ADD COLUMN ai_member_quota INT UNSIGNED NOT NULL DEFAULT 0 AFTER ai_monthly_quota,
+            ADD COLUMN tutor_minutes INT UNSIGNED NOT NULL DEFAULT 0 AFTER ai_member_quota,
+            ADD COLUMN tutor_member_minutes INT UNSIGNED NOT NULL DEFAULT 0 AFTER tutor_minutes');
+        $out[] = 'Cuotas y minutos agregados a la configuración de planes.';
+    }
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);

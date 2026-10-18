@@ -121,6 +121,7 @@ define('TAVUS_PERSONA_ID', '');              // se crea con el script de prepara
 define('TAVUS_MAX_MINUTES', 15);             // duración máxima de una conversación
 define('TAVUS_IDLE_SECONDS', 120);           // 2 min sin interacción cierran la llamada
 define('TAVUS_MONTHLY_BUDGET_MIN', 300);     // tope de minutos al mes para todo el sitio
+define('TAVUS_COST_PER_MIN_USD', 0.35);      // tarifa de Tavus, para calcular el margen     // tope de minutos al mes para todo el sitio
 
 // ---------------------------------------------------------------------------
 // Planes / licencias (valores en COP)
@@ -136,14 +137,18 @@ $PLANS = [
         'seats'       => 60,
         'months'      => 12,
         'featured'    => false,
+        'audience'    => 'institucion',
         'payment_link' => 'https://mpago.li/2QYmYxX',
         // Herramientas de IA: generaciones al mes por licencia y tope por docente
         'ai_monthly_quota' => 1500,
         'ai_member_quota'  => 150,
+        // Tutor con avatar: minutos al mes por licencia y tope por docente
+        'tutor_minutes'        => 40,
+        'tutor_member_minutes' => 10,
         'features'    => [
             'Hasta 60 usuarios (docentes y directivos)',
-            'Más de 80 herramientas de IA para docentes',
-            'Más de 50 herramientas para estudiantes',
+            '28 herramientas de IA para docentes, y crecen cada mes',
+            'Material listo para entregar a los estudiantes',
             'Panel de administración de la institución',
             'Capacitación de arranque virtual (2 horas)',
             'Soporte por correo y chat',
@@ -158,9 +163,12 @@ $PLANS = [
         'seats'       => 250,
         'months'      => 12,
         'featured'    => true,
+        'audience'    => 'institucion',
         'payment_link' => 'https://mpago.li/18fzoqq',
-        'ai_monthly_quota' => 7500,
+        'ai_monthly_quota' => 5000,
         'ai_member_quota'  => 200,
+        'tutor_minutes'        => 100,
+        'tutor_member_minutes' => 10,
         'features'    => [
             'Hasta 250 usuarios en varias sedes',
             'Todo lo incluido en la Licencia Escuela',
@@ -172,8 +180,80 @@ $PLANS = [
             'Vigencia de 12 meses',
         ],
     ],
+    // -----------------------------------------------------------------------
+    // Planes individuales para docentes (cobro mensual).
+    // Los precios se fijaron con los costos de IA REALES medidos en el panel
+    // de costos, dejando como mínimo un 60 % de margen después de la API y de
+    // la comisión de la pasarela:  precio = costo / (0,40 − comisión).
+    // -----------------------------------------------------------------------
+    'docente' => [
+        'code'        => 'docente',
+        'name'        => 'Docente Esencial',
+        'tagline'     => 'Para un docente que quiere ahorrar horas de preparación.',
+        'price'       => 24900,
+        'seats'       => 1,
+        'months'      => 1,
+        'featured'    => false,
+        'audience'    => 'docente',
+        'payment_link' => '',
+        'ai_monthly_quota' => 120,
+        'ai_member_quota'  => 120,
+        'tutor_minutes'        => 0,
+        'tutor_member_minutes' => 0,
+        'features'    => [
+            '120 generaciones de IA al mes',
+            'Las 12 herramientas del catálogo',
+            'Descargas en PDF, Word, PowerPoint y HTML',
+            'Biblioteca con todos tus documentos',
+            'Cobro mensual, cancelas cuando quieras',
+        ],
+    ],
+    'docente_pro' => [
+        'code'        => 'docente_pro',
+        'name'        => 'Docente Pro',
+        'tagline'     => 'Para quien prepara PIAR, evaluaciones y material cada semana.',
+        'price'       => 49900,
+        'seats'       => 1,
+        'months'      => 1,
+        'featured'    => true,
+        'audience'    => 'docente',
+        'payment_link' => '',
+        'ai_monthly_quota' => 400,
+        'ai_member_quota'  => 400,
+        'tutor_minutes'        => 0,
+        'tutor_member_minutes' => 0,
+        'features'    => [
+            '400 generaciones de IA al mes',
+            'PIAR completo según el Decreto 1421 de 2017',
+            'Generador de exámenes con hoja de respuestas',
+            'Refinamiento ilimitado de resultados',
+            'Descargas en PDF, Word, PowerPoint y HTML',
+            'Cobro mensual, cancelas cuando quieras',
+        ],
+    ],
+    'docente_tutor' => [
+        'code'        => 'docente_tutor',
+        'name'        => 'Docente Pro + Tutor',
+        'tagline'     => 'Todo lo anterior y conversaciones con el tutor con avatar.',
+        'price'       => 129900,
+        'seats'       => 1,
+        'months'      => 1,
+        'featured'    => false,
+        'audience'    => 'docente',
+        'payment_link' => '',
+        'ai_monthly_quota' => 400,
+        'ai_member_quota'  => 400,
+        'tutor_minutes'        => 20,
+        'tutor_member_minutes' => 20,
+        'features'    => [
+            'Todo lo del plan Docente Pro',
+            '20 minutos al mes con el tutor con avatar',
+            'Práctica de clases, retroalimentación y dudas pedagógicas',
+            'La conversación se cierra sola tras 2 minutos sin interacción',
+            'Cobro mensual, cancelas cuando quieras',
+        ],
+    ],
 ];
-
 // Roles disponibles al agregar usuarios a una licencia
 $MEMBER_ROLES = [
     'docente'       => 'Docente',

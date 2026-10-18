@@ -7,9 +7,11 @@
  */
 
 /** Documento completo con la marca, el encabezado y el aviso de IA. */
-function export_document_html(string $title, string $markdown, array $meta = []): string
+function export_document_html(string $title, string $markdown, array $meta = [], bool $conMathJax = true): string
 {
     $cuerpo = md_to_html($markdown);
+    // Las fórmulas se dibujan con MathJax; en PDF ya vienen convertidas a símbolos.
+    $formulas = $conMathJax && tex_present($markdown) ? tex_mathjax_tag() : '';
     $sub = array_filter([
         $meta['herramienta'] ?? '',
         $meta['institucion'] ?? '',
@@ -36,7 +38,7 @@ function export_document_html(string $title, string $markdown, array $meta = [])
   li { margin-bottom: 4px; }
   strong { color: #1B1036; }
   .doc-footer { margin-top: 26px; border-top: 1px solid #E7E2F3; padding-top: 10px; font-size: 8.5pt; color: #6E6887; }
-</style></head>
+</style>' . $formulas . '</head>
 <body><div class="wrap">
   <div class="doc-header">
     <div class="doc-brand">' . e(BRAND_NAME) . '</div>
@@ -164,9 +166,14 @@ function export_docx(string $markdown, string $title, array $meta, string $filen
     exit;
 }
 
+
 /**
- * Presentación de PowerPoint a partir de la respuesta estructurada.
- * Nunca retorna.
+ * Presentación en PowerPoint con diseño, no con texto suelto.
+ *
+ * El lienzo es de 960 x 540 (16:9). Hay tres plantillas: portada y cierre en
+ * morado a toda página, y las intermedias en blanco con barra lateral, título
+ * acentuado, viñetas aireadas y pie con la numeración. El tamaño del texto se
+ * ajusta a la cantidad de viñetas para que la diapositiva nunca quede apretada.
  */
 function export_pptx(array $data, string $title, array $meta, string $filename): never
 {
@@ -179,34 +186,125 @@ function export_pptx(array $data, string $title, array $meta, string $filename):
         ->setCreator(BRAND_NAME)
         ->setTitle(mb_substr($title, 0, 120))
         ->setSubject((string) ($meta['institucion'] ?? ''));
+    $ppt->getLayout()->setDocumentLayout(\PhpOffice\PhpPresentation\DocumentLayout::LAYOUT_SCREEN_16X9);
 
-    $morado = new \PhpOffice\PhpPresentation\Style\Color('FF4A1FB8');
-    $tinta = new \PhpOffice\PhpPresentation\Style\Color('FF1B1036');
-    $primera = true;
+    // Paleta de la marca (ARGB)
+    $MORADO   = 'FF4A1FB8';
+    $MORADO_2 = 'FF6B3EF2';
+    $MORADO_3 = 'FF5A2DE0';
+    $LILA     = 'FFC9B8FF';
+    $LILA_BG  = 'FFF4EFFF';
+    $TINTA    = 'FF3D3358';
+    $GRIS     = 'FF6E6887';
+    $AMARILLO = 'FFFFC940';
+    $BLANCO   = 'FFFFFFFF';
 
-    foreach ((array) ($data['diapositivas'] ?? []) as $d) {
-        $slide = $primera ? $ppt->getActiveSlide() : $ppt->createSlide();
-        $primera = false;
+    $color = fn(string $argb) => new \PhpOffice\PhpPresentation\Style\Color($argb);
 
-        $tituloBox = $slide->createRichTextShape()->setHeight(80)->setWidth(860)->setOffsetX(60)->setOffsetY(50);
-        $run = $tituloBox->createTextRun(mb_substr((string) ($d['titulo'] ?? ''), 0, 120));
-        $run->getFont()->setBold(true)->setSize(26)->setColor($morado);
+    /** Caja de texto limpia, sin márgenes internos heredados. */
+    $caja = function ($slide, float $x, float $y, float $w, float $h) {
+        $s = $slide->createRichTextShape()->setOffsetX($x)->setOffsetY($y)->setWidth($w)->setHeight($h);
+        $s->setInsetLeft(0)->setInsetRight(0)->setInsetTop(0)->setInsetBottom(0);
+        return $s;
+    };
+    /** Rectángulo de color: una caja de texto vacía con relleno. */
+    $barra = function ($slide, float $x, float $y, float $w, float $h, string $argb) use ($caja, $color) {
+        $s = $caja($slide, $x, $y, $w, $h);
+        $s->getFill()->setFillType(\PhpOffice\PhpPresentation\Style\Fill::FILL_SOLID)
+            ->setStartColor($color($argb))->setEndColor($color($argb));
+        return $s;
+    };
+    $texto = function ($shape, string $contenido, int $size, string $argb, bool $bold = false) use ($color) {
+        $run = $shape->createTextRun(mb_substr($contenido, 0, 600));
+        $run->getFont()->setName('Trebuchet MS')->setSize($size)->setBold($bold)->setColor($color($argb));
+        return $run;
+    };
 
-        $puntos = array_filter((array) ($d['puntos'] ?? []), 'strlen');
-        if ($puntos) {
-            $cuerpo = $slide->createRichTextShape()->setHeight(360)->setWidth(860)->setOffsetX(60)->setOffsetY(150);
-            $cuerpo->getActiveParagraph()->getBulletStyle()
-                ->setBulletType(\PhpOffice\PhpPresentation\Style\Bullet::TYPE_BULLET)
-                ->setBulletChar('•');
-            $i = 0;
-            foreach ($puntos as $p) {
-                if ($i++ > 0) {
-                    $cuerpo->createParagraph()->getBulletStyle()
-                        ->setBulletType(\PhpOffice\PhpPresentation\Style\Bullet::TYPE_BULLET)->setBulletChar('•');
-                }
-                $t = $cuerpo->createTextRun(mb_substr((string) $p, 0, 300));
-                $t->getFont()->setSize(16)->setColor($tinta);
+    $diapositivas = array_values(array_filter((array) ($data['diapositivas'] ?? []), 'is_array'));
+    if (!$diapositivas) {
+        $diapositivas = [['titulo' => $title, 'puntos' => []]];
+    }
+    $total = count($diapositivas);
+    $subtitulo = trim(implode(' · ', array_filter([
+        (string) ($meta['grado'] ?? ''),
+        (string) ($meta['area'] ?? ''),
+        (string) ($meta['institucion'] ?? ''),
+    ], 'strlen')));
+
+    foreach ($diapositivas as $i => $d) {
+        $slide = $i === 0 ? $ppt->getActiveSlide() : $ppt->createSlide();
+        $tituloTexto = trim((string) ($d['titulo'] ?? ''));
+        $puntos = array_values(array_filter(array_map(
+            fn($p) => trim((string) $p),
+            (array) ($d['puntos'] ?? [])
+        ), 'strlen'));
+        $esPortada = $i === 0;
+        $esCierre = !$esPortada && $i === $total - 1 && $total > 2;
+
+        if ($esPortada || $esCierre) {
+            // ---- Portada y cierre: morado a toda página --------------------
+            $fondo = new \PhpOffice\PhpPresentation\Slide\Background\Color();
+            $fondo->setColor($color($MORADO));
+            $slide->setBackground($fondo);
+            $barra($slide, 648, 0, 312, 540, $MORADO_3);     // banda de profundidad
+            $barra($slide, 72, 168, 84, 8, $AMARILLO);       // acento
+
+            $t = $caja($slide, 72, 196, 540, 160);
+            $t->getActiveParagraph()->setLineSpacing(105);
+            $texto($t, $tituloTexto !== '' ? $tituloTexto : $title, $esPortada ? 40 : 34, $BLANCO, true);
+
+            $sub = $esPortada ? $subtitulo : implode('   ·   ', array_slice($puntos, 0, 3));
+            if ($esPortada && $puntos) {
+                $sub = trim($puntos[0] . ($sub !== '' ? '  ·  ' . $sub : ''));
             }
+            if ($sub !== '') {
+                $s = $caja($slide, 72, 368, 540, 60);
+                $s->getActiveParagraph()->setLineSpacing(120);
+                $texto($s, $sub, 17, $LILA);
+            }
+            $pie = $caja($slide, 72, 456, 520, 28);
+            $texto($pie, BRAND_NAME . ($esPortada ? '' : ' · ¿Preguntas?'), 13, $LILA);
+        } else {
+            // ---- Diapositiva de contenido ----------------------------------
+            $barra($slide, 0, 0, 12, 540, $MORADO_2);        // barra lateral
+            $t = $caja($slide, 64, 44, 800, 68);
+            $t->getActiveParagraph()->setLineSpacing(105);
+            $texto($t, $tituloTexto, 28, $MORADO, true);
+            $barra($slide, 64, 120, 72, 5, $AMARILLO);       // subrayado del título
+
+            if ($puntos) {
+                // Menos viñetas, letra más grande: la diapositiva se lee de lejos.
+                $tam = count($puntos) <= 3 ? 22 : (count($puntos) <= 5 ? 19 : 17);
+                $cuerpo = $caja($slide, 64, 156, 760, 250);
+                $primer = true;
+                foreach ($puntos as $p) {
+                    $par = $primer ? $cuerpo->getActiveParagraph() : $cuerpo->createParagraph();
+                    $primer = false;
+                    $par->getBulletStyle()
+                        ->setBulletType(\PhpOffice\PhpPresentation\Style\Bullet::TYPE_BULLET)
+                        ->setBulletChar('▪')
+                        ->setBulletFont('Trebuchet MS');
+                    $par->getAlignment()->setMarginLeft(28)->setIndent(-28);
+                    $par->setLineSpacing(125);
+                    $par->setSpacingAfter(14);
+                    $run = $par->createTextRun(mb_substr($p, 0, 300));
+                    $run->getFont()->setName('Trebuchet MS')->setSize($tam)->setColor($color($TINTA));
+                }
+            }
+
+            if (!empty($d['imagen_sugerida'])) {
+                $chip = $barra($slide, 64, 418, 520, 38, $LILA_BG);
+                $chip->setInsetLeft(12)->setInsetRight(12)->setInsetTop(8);
+                $texto($chip, 'Imagen sugerida: ' . mb_substr((string) $d['imagen_sugerida'], 0, 95), 11, $MORADO);
+            }
+
+            $pie = $caja($slide, 64, 486, 620, 22);
+            $texto($pie, BRAND_NAME . ' · Borrador generado con IA: revísalo antes de proyectarlo.', 9, $GRIS);
+
+            $num = $caja($slide, 836, 482, 60, 26);
+            $num->getActiveParagraph()->getAlignment()
+                ->setHorizontal(\PhpOffice\PhpPresentation\Style\Alignment::HORIZONTAL_RIGHT);
+            $texto($num, ($i + 1) . ' / ' . $total, 11, $GRIS, true);
         }
 
         if (!empty($d['nota_docente'])) {

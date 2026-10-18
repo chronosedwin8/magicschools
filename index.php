@@ -53,7 +53,7 @@ include __DIR__ . '/includes/partials/nav.php';
                     <p class="reseller-note">✔️ <strong>Distribuidor autorizado de <?= e(RESELLER_OF) ?></strong><?= RESELLER_TERRITORY !== '' ? ' en ' . e(RESELLER_TERRITORY) : '' ?>.</p>
                 <?php endif; ?>
                 <ul class="hero-checks">
-                    <li>Más de 80 herramientas</li>
+                    <li><?= count($tools) ?> herramientas de IA</li>
                     <li>Pago seguro con <?= e(PAYMENT_PROVIDER) ?></li>
                     <li>Activación inmediata</li>
                 </ul>
@@ -62,7 +62,7 @@ include __DIR__ . '/includes/partials/nav.php';
                 <div class="mock-window">
                     <div class="mock-bar"><span></span><span></span><span></span><em><?= e(BRAND_SHORT) ?> · Herramientas</em></div>
                     <div class="mock-body">
-                        <div class="mock-search"><?= icon('chispa', 16) ?> Buscar entre 80+ herramientas…</div>
+                        <div class="mock-search"><?= icon('chispa', 16) ?> Buscar entre <?= count($tools) ?> herramientas…</div>
                         <div class="mock-grid">
                             <div class="mock-card c-purple"><b><?= icon('presentacion', 20) ?></b><span>Presentaciones</span></div>
                             <div class="mock-card c-pink"><b><?= icon('plan', 20) ?></b><span>Plan de clase</span></div>
@@ -155,7 +155,7 @@ include __DIR__ . '/includes/partials/nav.php';
                     <span class="pillar-badge"><?= icon('docente', 16) ?> IA para docentes</span>
                     <h3>Más tiempo para enseñar, menos para el papeleo</h3>
                     <ul class="checklist">
-                        <li>Más de 80 herramientas para planear, evaluar y comunicar</li>
+                        <li><?= count($tools) ?> herramientas para planear, evaluar y comunicar</li>
                         <li>Asistente conversacional pedagógico</li>
                         <li>Exportación a documentos, presentaciones y formularios</li>
                         <li>Formación y certificación incluidas</li>
@@ -166,7 +166,7 @@ include __DIR__ . '/includes/partials/nav.php';
                     <span class="pillar-badge"><?= icon('estudiante', 16) ?> IA para estudiantes</span>
                     <h3>Aprendizaje guiado, seguro y supervisado</h3>
                     <ul class="checklist">
-                        <li>Más de 50 herramientas diseñadas para estudiantes</li>
+                        <li>Material listo para entregar a los estudiantes</li>
                         <li>Actividades creadas y supervisadas por el docente</li>
                         <li>Moderación de contenido y alertas de seguridad</li>
                         <li>Historial visible para el docente en todo momento</li>
@@ -175,8 +175,8 @@ include __DIR__ . '/includes/partials/nav.php';
                 </article>
             </div>
             <div class="stats reveal">
-                <div class="stat"><strong data-count="80">0</strong><span>+ herramientas para docentes</span></div>
-                <div class="stat"><strong data-count="50">0</strong><span>+ herramientas para estudiantes</span></div>
+                <div class="stat"><strong data-count="<?= count($tools) ?>">0</strong><span>herramientas para docentes</span></div>
+                <div class="stat"><strong data-count="4">0</strong><span>formatos de descarga: PDF, Word, PowerPoint y HTML</span></div>
                 <div class="stat"><strong data-count="30">0</strong><span>+ idiomas disponibles</span></div>
                 <div class="stat"><strong data-count="12">0</strong><span>meses de acceso por licencia</span></div>
             </div>
@@ -296,7 +296,7 @@ include __DIR__ . '/includes/partials/nav.php';
                 <p>Precio total en pesos colombianos, pago único por 12 meses, sin cargos adicionales al pagar. Paga con tarjeta, PSE o efectivo mediante un link seguro.</p>
             </div>
             <div class="pricing">
-                <?php foreach ($PLANS as $p): ?>
+                <?php foreach ($PLANS as $p): if (($p['audience'] ?? 'institucion') !== 'institucion') continue; ?>
                     <article class="price-card<?= $p['featured'] ? ' featured' : '' ?> reveal">
                         <?php if ($p['featured']): ?><span class="ribbon">Mejor valor por usuario</span><?php endif; ?>
                         <h3><?= e($p['name']) ?></h3>
@@ -322,6 +322,38 @@ include __DIR__ . '/includes/partials/nav.php';
         </div>
     </section>
 
+    <!-- PLANES DOCENTES ================================================= -->
+    <section class="section section-soft" id="docentes">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="eyebrow">Para docentes</span>
+                <h2>¿Tu colegio todavía no tiene licencia? <span class="text-gradient">Empieza tú</span></h2>
+                <p>Planes individuales con cobro mensual. Las mismas herramientas, para un solo docente.</p>
+            </div>
+            <div class="pricing">
+                <?php foreach ($PLANS as $p): if (($p['audience'] ?? 'institucion') !== 'docente') continue; ?>
+                    <article class="price-card<?= $p['featured'] ? ' featured' : '' ?> reveal">
+                        <?php if ($p['featured']): ?><span class="ribbon">El más elegido</span><?php endif; ?>
+                        <h3><?= e($p['name']) ?></h3>
+                        <p class="price-tag"><?= e($p['tagline']) ?></p>
+                        <div class="price">
+                            <span class="amount"><?= money_short($p['price']) ?></span>
+                            <span class="per"><?= e(CURRENCY) ?> / mes</span>
+                        </div>
+                        <?php if (!empty($p['payment_link'])): ?>
+                            <a class="btn <?= $p['featured'] ? 'btn-light' : 'btn-primary' ?> btn-block btn-lg" href="<?= e(url('checkout.php?plan=' . $p['code'])) ?>">Empezar con <?= e($p['name']) ?></a>
+                        <?php else: ?>
+                            <a class="btn btn-outline btn-block btn-lg" href="#contacto">Avísame cuando esté disponible</a>
+                        <?php endif; ?>
+                        <ul class="checklist">
+                            <?php foreach ($p['features'] as $f): ?><li><?= e($f) ?></li><?php endforeach; ?>
+                        </ul>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+            <p class="center muted small mt-24">Puedes cancelar cuando quieras: el plan vence al final del mes pagado y no se renueva solo.</p>
+        </div>
+    </section>
     <!-- FAQ ============================================================= -->
     <section class="section" id="faq">
         <div class="container narrow">

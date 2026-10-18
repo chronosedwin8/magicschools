@@ -164,6 +164,7 @@ include __DIR__ . '/_top.php';
                 <a class="btn btn-primary btn-sm" href="<?= e(url('portal/herramienta.php?h=' . $gen['tool_slug'])) ?>">Crear otro</a>
             </div>
             <div class="doc" id="doc"><?= md_to_html((string) $gen['output_text']) ?></div>
+            <?php if (tex_present((string) $gen['output_text'])): ?><?= tex_mathjax_tag() ?><?php endif; ?>
 
             <div class="refine-bar">
                 <span class="refine-label">¿Quieres ajustarlo?</span>
@@ -238,7 +239,8 @@ include __DIR__ . '/_top.php';
 
 <?php else: ?>
     <!-- Formulario ------------------------------------------------------- -->
-    <form method="post" class="panel tool-form" novalidate>
+    <form method="post" class="panel tool-form" novalidate
+          data-assist="<?= e(url('portal/asistir.php')) ?>" data-csrf="<?= e(csrf_token()) ?>">
         <?= csrf_field() ?>
         <input type="hidden" name="h" value="<?= e($tool['slug']) ?>">
         <?php foreach ($tool['fields'] as $f): ?>
@@ -277,6 +279,23 @@ include __DIR__ . '/_top.php';
                 <?php endif; ?>
                 <?php if (!empty($f['help'])): ?><small class="field-help"><?= e($f['help']) ?></small><?php endif; ?>
             </label>
+            <?php // Todo campo de texto libre se puede escribir o pulir con IA
+            if (in_array($f['type'], ['textarea', 'text'], true) && (int) ($f['max'] ?? 0) >= 120): ?>
+                <div class="field-ai" data-field="<?= e($f['name']) ?>">
+                    <button type="button" class="ai-chip" data-ai="crear"><?= icon('chispa', 14) ?> Escribir con IA</button>
+                    <button type="button" class="ai-chip" data-ai="mejorar"><?= icon('reescribir', 14) ?> Mejorar redacción</button>
+                    <button type="button" class="ai-chip ai-undo" hidden>Deshacer</button>
+                    <span class="ai-state" role="status"></span>
+                    <div class="ai-notes" hidden>
+                        <label>Cuéntame en pocas palabras qué quieres decir y yo lo redacto:
+                            <textarea rows="2" class="ai-notes-input" maxlength="1000"
+                                      placeholder="Ej.: le cuesta concentrarse en clase larga, le gusta dibujar, mejora cuando trabaja en pareja"></textarea>
+                        </label>
+                        <button type="button" class="btn btn-primary btn-sm ai-notes-go">Redactar</button>
+                        <button type="button" class="btn btn-outline btn-sm ai-notes-cancel">Cancelar</button>
+                    </div>
+                </div>
+            <?php endif; ?>
         <?php endforeach; ?>
         <button class="btn btn-primary btn-lg btn-block">Generar</button>
         <p class="muted small center">El resultado es un borrador que debes revisar antes de usarlo.</p>
