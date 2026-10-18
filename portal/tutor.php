@@ -9,8 +9,8 @@
  */
 require_once __DIR__ . '/../includes/bootstrap.php';
 
-$user = require_login();
-$license = require_tools_access($user);
+// Devuelve el par usuario/licencia: tomar solo uno dejaba la licencia vacía.
+[$user, $license] = require_tools_access();
 
 $sesion = tutor_live_session((int) $user['id']);
 $permiso = tutor_allowance($user, $license);
@@ -188,7 +188,7 @@ include __DIR__ . '/_top.php';
                 ];
                 foreach ($historial as $h): ?>
                     <tr>
-                        <td class="nowrap"><?= e(fecha_hora($h['created_at'])) ?></td>
+                        <td class="nowrap"><?= e(fecha($h["created_at"], true)) ?></td>
                         <td><?= e($h['topic'] ?: '—') ?></td>
                         <td class="nowrap"><?= $h['status'] === 'failed' ? '—' : tavus_minutes((int) $h['billed_seconds']) ?></td>
                         <td><?= e($motivos[(string) $h['end_reason']] ?? (string) $h['end_reason']) ?></td>

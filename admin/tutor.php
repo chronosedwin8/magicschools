@@ -164,9 +164,9 @@ include __DIR__ . '/../portal/_top.php';
                     <tr>
                         <td><strong><?= e($a['name'] ?? '—') ?></strong><small class="block muted"><?= e($a['email'] ?? '') ?></small></td>
                         <td><span class="badge badge-warning"><?= e($a['status']) ?></span></td>
-                        <td class="nowrap"><?= e(fecha_hora($a['created_at'])) ?></td>
+                        <td class="nowrap"><?= e(fecha($a["created_at"], true)) ?></td>
                         <td class="nowrap"><?= tavus_minutes((int) $a['max_seconds']) ?> min</td>
-                        <td class="nowrap"><?= $a['last_beat_at'] ? e(fecha_hora($a['last_beat_at'])) : '—' ?></td>
+                        <td class="nowrap"><?= $a['last_beat_at'] ? e(fecha($a["last_beat_at"], true)) : '—' ?></td>
                         <td><form method="post" onsubmit="return confirm('¿Cerrar esta conversación ahora?')">
                             <?= csrf_field() ?>
                             <input type="hidden" name="action" value="cerrar">
@@ -192,7 +192,7 @@ include __DIR__ . '/../portal/_top.php';
                 <tbody>
                 <?php foreach ($ultimas as $u): ?>
                     <tr>
-                        <td class="nowrap"><?= e(fecha_hora($u['created_at'])) ?></td>
+                        <td class="nowrap"><?= e(fecha($u["created_at"], true)) ?></td>
                         <td><?= e($u['name'] ?? '—') ?><small class="block muted"><?= e($u['institution'] ?? '') ?></small></td>
                         <td><?= e($u['topic'] ?: '—') ?></td>
                         <td class="nowrap"><?= $u['status'] === 'failed' ? '—' : tavus_minutes((int) $u['billed_seconds']) ?></td>
