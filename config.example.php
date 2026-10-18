@@ -202,7 +202,7 @@ $PLANS = [
         'tutor_member_minutes' => 0,
         'features'    => [
             '120 generaciones de IA al mes',
-            'Las 12 herramientas del catálogo',
+            'Las 28 herramientas del catálogo',
             'Descargas en PDF, Word, PowerPoint y HTML',
             'Biblioteca con todos tus documentos',
             'Cobro mensual, cancelas cuando quieras',

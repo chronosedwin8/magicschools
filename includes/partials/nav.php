@@ -32,7 +32,7 @@
                     </div>
                 </li>
                 <li><a class="nav-link" href="<?= e(url('herramientas')) ?>">Herramientas</a></li>
-                <li><a class="nav-link" href="<?= e($home) ?>#docentes">Para docentes</a></li>
+                <li><a class="nav-link" href="<?= e($home) ?>#docentes">Docentes</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#seguridad">Seguridad</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#precios">Precios</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#faq">Preguntas</a></li>

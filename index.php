@@ -397,7 +397,7 @@ include __DIR__ . '/includes/partials/nav.php';
                 <h2>¿Tu colegio todavía no tiene licencia? <span class="text-gradient">Empieza tú</span></h2>
                 <p>Planes individuales con cobro mensual. Las mismas herramientas, para un solo docente.</p>
             </div>
-            <div class="pricing">
+            <div class="pricing pricing-3">
                 <?php foreach ($PLANS as $p): if (($p['audience'] ?? 'institucion') !== 'docente') continue; ?>
                     <article class="price-card<?= $p['featured'] ? ' featured' : '' ?> reveal">
                         <?php if ($p['featured']): ?><span class="ribbon">El más elegido</span><?php endif; ?>
