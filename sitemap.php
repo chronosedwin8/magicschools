@@ -12,6 +12,7 @@ $hoy = date('Y-m-d');
 $paginas = [
     ['', '1.0', 'weekly'],
     ['herramientas', '0.9', 'weekly'],
+    ['tutor', '0.8', 'monthly'],
     ['contacto.php', '0.5', 'monthly'],
     ['legal.php', '0.4', 'yearly'],
     ['derechos.php', '0.4', 'yearly'],

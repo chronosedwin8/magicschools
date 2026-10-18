@@ -25,6 +25,10 @@
                             <span class="dd-icon dd-pink">🍎</span>
                             <span><strong>IA para docentes</strong><small><?= count(ai_tools_visible()) ?> herramientas para planear, evaluar y comunicar</small></span>
                         </a>
+                        <a href="<?= e(url('tutor')) ?>" class="dropdown-item">
+                            <span class="dd-icon dd-orange">🎥</span>
+                            <span><strong>Tutor con avatar</strong><small>Daniel conversa contigo sobre tu clase</small></span>
+                        </a>
                         <a href="<?= e($home) ?>#soluciones" class="dropdown-item">
                             <span class="dd-icon dd-orange">🎒</span>
                             <span><strong>IA para estudiantes</strong><small>Experiencias guiadas por el docente</small></span>

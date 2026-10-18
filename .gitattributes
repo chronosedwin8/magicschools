@@ -1,3 +1,4 @@
 * text=auto eol=lf
 *.png binary
 *.jpg binary
+assets/video/*.mp4 binary

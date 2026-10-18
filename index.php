@@ -198,6 +198,44 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
         </div>
     </section>
+    <!-- TUTOR CON AVATAR ================================================ -->
+    <section class="section" id="tutor">
+        <div class="container tutor-promo">
+            <div class="reveal">
+                <span class="eyebrow"><span class="dot"></span> Novedad</span>
+                <h2>Conversa con <span class="text-gradient">Daniel</span>, tu tutor con avatar</h2>
+                <p class="lead">No es un chat de texto: es una conversación en video sobre la clase que vas a dar.
+                    Cuéntale qué tema sigue o qué actividad no funcionó, y lo piensan juntos.</p>
+                <ul class="checklist">
+                    <li>Te hace preguntas y te propone alternativas, sin decidir por ti.</li>
+                    <li>Dice siempre que es una inteligencia artificial, no una persona.</li>
+                    <li>No diagnostica estudiantes: para eso remite al equipo de apoyo.</li>
+                    <li>Hasta <?= (int) TAVUS_MAX_MINUTES ?> minutos por conversación y sin grabación.</li>
+                    <li>Se cierra sola tras <?= (int) round(TAVUS_IDLE_SECONDS / 60) ?> minutos sin interacción.</li>
+                </ul>
+                <div class="hero-ctas">
+                    <a class="btn btn-primary" href="<?= e(url('tutor')) ?>">Conocer al tutor <span aria-hidden="true">→</span></a>
+                    <a class="btn btn-outline" href="#docentes">Planes con tutor</a>
+                </div>
+            </div>
+            <figure class="tutor-video reveal">
+                <?php $videoHome = 'assets/video/tutor-daniel.mp4'; $posterHome = 'assets/img/tutor-daniel.jpg'; ?>
+                <?php if (is_file(__DIR__ . '/' . $videoHome)): ?>
+                    <video controls preload="metadata" playsinline
+                           <?= is_file(__DIR__ . '/' . $posterHome) ? 'poster="' . e(url($posterHome)) . '"' : '' ?>>
+                        <source src="<?= e(url($videoHome)) ?>" type="video/mp4">
+                        Tu navegador no puede reproducir este video.
+                    </video>
+                    <figcaption>Daniel se presenta en 50 segundos.</figcaption>
+                <?php else: ?>
+                    <div class="tutor-video-placeholder">
+                        <span><?= icon('tutor', 40) ?></span>
+                        <p>Video de presentación disponible en unos minutos.</p>
+                    </div>
+                <?php endif; ?>
+            </figure>
+        </div>
+    </section>
     <!-- SOLUTIONS ======================================================= -->
     <section class="section section-soft" id="soluciones">
         <div class="container">

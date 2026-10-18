@@ -6,6 +6,7 @@
     RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
     # /herramientas y /herramientas/<slug>
+    RewriteRule ^tutor/?$ tutor.php [L,QSA]
     RewriteRule ^herramientas/?$ herramientas.php [L,QSA]
     RewriteRule ^herramientas/([a-z0-9-]+)/?$ herramientas.php?h=$1 [L,QSA]
 </IfModule>
