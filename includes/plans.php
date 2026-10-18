@@ -31,6 +31,8 @@ function apply_plan_overrides(): void
             continue;
         }
         $features = json_decode((string) $r['features'], true);
+        // Las filas anteriores a la fase 4 no traen cuotas: se reconocen por venir en cero.
+        $guardadoConCuotas = (int) ($r['ai_monthly_quota'] ?? 0) > 0;
         $PLANS[$r['code']] = array_merge($PLANS[$r['code']], [
             'name'     => $r['name'],
             'tagline'  => (string) $r['tagline'],
@@ -41,9 +43,10 @@ function apply_plan_overrides(): void
             'features' => is_array($features) ? $features : $PLANS[$r['code']]['features'],
             'ai_monthly_quota' => (int) ($r['ai_monthly_quota'] ?? 0) ?: ($PLANS[$r['code']]['ai_monthly_quota'] ?? 0),
             'ai_member_quota'  => (int) ($r['ai_member_quota'] ?? 0) ?: ($PLANS[$r['code']]['ai_member_quota'] ?? 0),
-            // Los minutos del tutor sí pueden ser 0: es como se apaga en un plan.
-            'tutor_minutes'        => isset($r['tutor_minutes']) ? (int) $r['tutor_minutes'] : ($PLANS[$r['code']]['tutor_minutes'] ?? 0),
-            'tutor_member_minutes' => isset($r['tutor_member_minutes']) ? (int) $r['tutor_member_minutes'] : ($PLANS[$r['code']]['tutor_member_minutes'] ?? 0),
+            // Los minutos del tutor sí pueden ser 0 (así se apaga en un plan), pero una fila
+            // guardada antes de que existieran no debe apagarlo: ahí mandan los de config.php.
+            'tutor_minutes'        => $guardadoConCuotas ? (int) $r['tutor_minutes'] : ($PLANS[$r['code']]['tutor_minutes'] ?? 0),
+            'tutor_member_minutes' => $guardadoConCuotas ? (int) $r['tutor_member_minutes'] : ($PLANS[$r['code']]['tutor_member_minutes'] ?? 0),
             'payment_link' => (string) ($r['payment_link'] ?? '') !== ''
                 ? (string) $r['payment_link']
                 : ($PLANS[$r['code']]['payment_link'] ?? ''),

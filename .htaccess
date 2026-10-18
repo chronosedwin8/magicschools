@@ -1,13 +1,19 @@
-Options -Indexes
-DirectoryIndex index.php
+# URLs limpias para el catálogo público (en producción lo hace Nginx).
+<IfModule mod_rewrite.c>
+    RewriteEngine On
 
-# Bloquear archivos sensibles
-<FilesMatch "^(config\.php|_.*\.php|.*\.sql|.*\.log|.*\.md)$">
-    Require all denied
-</FilesMatch>
+    # /sitemap.xml -> sitemap.php
+    RewriteRule ^sitemap\.xml$ sitemap.php [L]
 
-<IfModule mod_headers.c>
-    Header always set X-Content-Type-Options "nosniff"
-    Header always set X-Frame-Options "SAMEORIGIN"
-    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    # /herramientas y /herramientas/<slug>
+    RewriteRule ^herramientas/?$ herramientas.php [L,QSA]
+    RewriteRule ^herramientas/([a-z0-9-]+)/?$ herramientas.php?h=$1 [L,QSA]
 </IfModule>
+
+# Nunca servir estas carpetas ni estos archivos
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(config\.php|composer\.(json|lock)|install\.php)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+RedirectMatch 403 ^/(vendor|storage|cron|database)/

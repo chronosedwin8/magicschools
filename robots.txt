@@ -1,0 +1,14 @@
+# MagicSchools
+
+User-agent: *
+Allow: /
+# Zonas privadas: no tiene sentido rastrearlas
+Disallow: /portal/
+Disallow: /admin/
+Disallow: /checkout.php
+Disallow: /install.php
+Disallow: /cron/
+Disallow: /vendor/
+Disallow: /storage/
+
+Sitemap: https://www.magicschools.es/sitemap.xml

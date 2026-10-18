@@ -1,13 +1,18 @@
 <?php
 require_once __DIR__ . '/includes/bootstrap.php';
 
-$pageTitle = BRAND_NAME . ' | Inteligencia artificial segura para colegios';
+// Metadatos para buscadores y redes: el título lleva lo que la gente busca.
+$pageTitle = 'IA para docentes y colegios en Colombia | ' . BRAND_NAME;
+$pageDescription = 'Planea clases, crea exámenes y rúbricas, elabora el PIAR y comunícate con las familias '
+    . 'con inteligencia artificial. Herramientas en español para docentes y colegios de Colombia, con '
+    . 'descarga en PDF, Word y PowerPoint.';
+$pageCanonical = '';
 $bodyClass = 'page-home';
 
 // Las herramientas se leen del catálogo real del portal: una sola fuente
 $tools = array_map(static fn(array $t): array => [
     'cat' => $t['category'], 'icon' => $t['icon'], 'color' => $t['color'],
-    'name' => $t['name'], 'desc' => $t['desc'],
+    'name' => $t['name'], 'desc' => $t['desc'], 'slug' => $t['slug'],
 ], array_values(ai_tools_visible()));
 
 
@@ -28,10 +33,13 @@ $usecases = [
     ['role' => 'Rectoría', 'color' => 'green', 'before' => 'Sin visibilidad sobre el uso de IA', 'after' => 'Panel con uso y adopción por sede', 'text' => 'Define qué herramientas están disponibles para docentes y estudiantes y consulta reportes de adopción en tiempo real.'],
 ];
 
+// Datos estructurados: empresa, producto con sus planes y preguntas frecuentes
+$pageJsonLd = [jsonld_organizacion(), jsonld_aplicacion(), jsonld_faq($faqs)];
+
 include __DIR__ . '/includes/partials/head.php';
 include __DIR__ . '/includes/partials/nav.php';
 ?>
-<main>
+<main id="contenido">
     <!-- HERO ============================================================ -->
     <section class="hero">
         <div class="hero-bg" aria-hidden="true">
@@ -43,8 +51,10 @@ include __DIR__ . '/includes/partials/nav.php';
         <div class="container hero-grid">
             <div class="hero-copy reveal">
                 <span class="eyebrow"><span class="dot"></span> Plataforma de IA para la educación</span>
-                <h1>IA segura para <span class="text-gradient">toda tu institución</span>, pensada para quienes enseñan</h1>
-                <p class="lead">Ahorra horas de trabajo cada semana, despierta la creatividad en el aula y lleva la inteligencia artificial a docentes y estudiantes con control, privacidad y acompañamiento.</p>
+                <h1>Inteligencia artificial para <span class="text-gradient">docentes y colegios</span> de Colombia</h1>
+                <p class="lead">Planea tus clases, arma exámenes y rúbricas, construye el PIAR y escribe a las familias
+                    en minutos. <?= count($tools) ?> herramientas en español, pensadas para el aula colombiana, con descarga
+                    en PDF, Word y PowerPoint.</p>
                 <div class="hero-ctas">
                     <a href="#precios" class="btn btn-primary btn-lg">Comprar licencia <span aria-hidden="true">→</span></a>
                     <a href="#contacto" class="btn btn-outline btn-lg">Hablar con un asesor</a>
@@ -117,20 +127,77 @@ include __DIR__ . '/includes/partials/nav.php';
             </div>
             <div class="tools-grid">
                 <?php foreach ($tools as $t): ?>
-                    <article class="tool-card reveal" data-cat="<?= e($t['cat']) ?>">
+                    <a class="tool-card reveal" data-cat="<?= e($t['cat']) ?>" href="<?= e(url('herramientas/' . $t['slug'])) ?>">
                         <span class="tool-icon c-<?= e($t['color']) ?>"><?= icon($t['icon'], 22) ?></span>
                         <h3><?= e($t['name']) ?></h3>
                         <p><?= e($t['desc']) ?></p>
-                        <span class="tool-link">Probar herramienta <span aria-hidden="true">→</span></span>
-                    </article>
+                        <span class="tool-link">Cómo funciona <span aria-hidden="true">→</span></span>
+                    </a>
                 <?php endforeach; ?>
             </div>
             <div class="center mt-40">
-                <a href="#precios" class="btn btn-primary">Ver todas las herramientas con tu licencia <span aria-hidden="true">→</span></a>
+                <a href="<?= e(url('herramientas')) ?>" class="btn btn-primary">Ver las <?= count($tools) ?> herramientas en detalle <span aria-hidden="true">→</span></a>
+                <a href="#precios" class="btn btn-outline">Ver precios</a>
             </div>
         </div>
     </section>
 
+    <!-- QUÉ RESUELVE (contenido para buscadores y para quien compara) ==== -->
+    <section class="section section-soft" id="para-que-sirve">
+        <div class="container">
+            <div class="section-head reveal">
+                <span class="eyebrow">Para qué sirve</span>
+                <h2>Lo que un docente resuelve con <span class="text-gradient">MagicSchools</span></h2>
+                <p>Cada herramienta pide lo mínimo y devuelve un borrador que tú revisas y apruebas.</p>
+            </div>
+            <div class="use-grid reveal">
+                <article class="use-card">
+                    <h3>Planear clases y unidades</h3>
+                    <p>Un plan de clase con objetivo, momentos y evaluación en menos de un minuto; unidades completas
+                        semana por semana y clases con el modelo 5E. Todo articulado con los estándares y los DBA del
+                        Ministerio de Educación.</p>
+                    <p><a class="link-arrow" href="<?= e(url('herramientas/plan-de-clase')) ?>">Plan de clase <span>→</span></a>
+                       <a class="link-arrow" href="<?= e(url('herramientas/unidad')) ?>">Planeador de unidad <span>→</span></a></p>
+                </article>
+                <article class="use-card">
+                    <h3>Evaluar sin pasar el fin de semana calificando</h3>
+                    <p>Exámenes con hoja de respuestas y solucionario, quices, rúbricas por niveles de desempeño del
+                        Decreto 1290 y retroalimentación de escritos. Las fórmulas de matemáticas y ciencias salen
+                        bien escritas, en LaTeX.</p>
+                    <p><a class="link-arrow" href="<?= e(url('herramientas/examen')) ?>">Generador de exámenes <span>→</span></a>
+                       <a class="link-arrow" href="<?= e(url('herramientas/rubrica')) ?>">Rúbricas <span>→</span></a></p>
+                </article>
+                <article class="use-card">
+                    <h3>Atender la diversidad del aula</h3>
+                    <p>El PIAR según el Decreto 1421 de 2017, metas de apoyo medibles, apoyo conductual positivo,
+                        planes para estudiantes con talentos excepcionales y tableros de opciones con Diseño Universal
+                        para el Aprendizaje.</p>
+                    <p><a class="link-arrow" href="<?= e(url('herramientas/piar')) ?>">PIAR <span>→</span></a>
+                       <a class="link-arrow" href="<?= e(url('herramientas/tablero-opciones')) ?>">Tablero DUA <span>→</span></a></p>
+                </article>
+                <article class="use-card">
+                    <h3>Trabajar por proyectos</h3>
+                    <p>Un proyecto de aula completo y listo para imprimir: pregunta orientadora, producto público,
+                        todas las sesiones, rúbrica, cronograma, plan B y anexos para fotocopiar.</p>
+                    <p><a class="link-arrow" href="<?= e(url('herramientas/abp')) ?>">Proyecto ABP <span>→</span></a></p>
+                </article>
+                <article class="use-card">
+                    <h3>Comunicarte con las familias</h3>
+                    <p>Circulares del curso, observaciones de boletín, correos difíciles bien escritos y publicaciones
+                        para las redes del colegio, siempre cuidando los datos y la imagen de los menores.</p>
+                    <p><a class="link-arrow" href="<?= e(url('herramientas/circular')) ?>">Circular para familias <span>→</span></a>
+                       <a class="link-arrow" href="<?= e(url('herramientas/boletin')) ?>">Observaciones de boletín <span>→</span></a></p>
+                </article>
+                <article class="use-card">
+                    <h3>Practicar con un tutor que te escucha</h3>
+                    <p>Daniel, el tutor con avatar, conversa contigo sobre tu clase: te hace preguntas, propone
+                        alternativas y te devuelve la decisión pedagógica. Se cierra solo a los dos minutos sin
+                        interacción, para que no gastes minutos de más.</p>
+                    <p><a class="link-arrow" href="#docentes">Planes con tutor <span>→</span></a></p>
+                </article>
+            </div>
+        </div>
+    </section>
     <!-- SOLUTIONS ======================================================= -->
     <section class="section section-soft" id="soluciones">
         <div class="container">

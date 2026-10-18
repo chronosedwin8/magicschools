@@ -21,7 +21,7 @@
                             <span class="dd-icon dd-purple">🏫</span>
                             <span><strong>IA para colegios</strong><small>Seguridad, control y analítica institucional</small></span>
                         </a>
-                        <a href="<?= e($home) ?>#soluciones" class="dropdown-item">
+                        <a href="<?= e(url('herramientas')) ?>" class="dropdown-item">
                             <span class="dd-icon dd-pink">🍎</span>
                             <span><strong>IA para docentes</strong><small><?= count(ai_tools_visible()) ?> herramientas para planear, evaluar y comunicar</small></span>
                         </a>
@@ -31,7 +31,8 @@
                         </a>
                     </div>
                 </li>
-                <li><a class="nav-link" href="<?= e($home) ?>#herramientas">Herramientas</a></li>
+                <li><a class="nav-link" href="<?= e(url('herramientas')) ?>">Herramientas</a></li>
+                <li><a class="nav-link" href="<?= e($home) ?>#docentes">Para docentes</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#seguridad">Seguridad</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#precios">Precios</a></li>
                 <li><a class="nav-link" href="<?= e($home) ?>#faq">Preguntas</a></li>

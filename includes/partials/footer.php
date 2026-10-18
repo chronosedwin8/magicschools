@@ -29,6 +29,11 @@
                 <li><a href="<?= e($home) ?>#comunidad">Comunidad de pioneros</a></li>
                 <li><a href="<?= e($home) ?>#faq">Preguntas frecuentes</a></li>
                 <li><a href="<?= e($home) ?>#legal">Información legal</a></li>
+                <li><a href="<?= e(url('herramientas')) ?>">Todas las herramientas</a></li>
+                <li><a href="<?= e(url('herramientas/plan-de-clase')) ?>">Plan de clase con IA</a></li>
+                <li><a href="<?= e(url('herramientas/examen')) ?>">Generador de exámenes</a></li>
+                <li><a href="<?= e(url('herramientas/piar')) ?>">PIAR (Decreto 1421)</a></li>
+                <li><a href="<?= e(url('herramientas/abp')) ?>">Proyectos ABP</a></li>
                 <li><a href="<?= e(url('portal/login.php')) ?>">Portal de clientes</a></li>
             </ul>
         </div>

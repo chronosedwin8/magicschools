@@ -85,8 +85,10 @@ function tutor_allowance(array $user, array $license): array
     if (!tavus_enabled()) {
         return $no('El tutor con avatar está desactivado en este momento.', 'apagado');
     }
+    // El administrador usa todo sin topes de plan; el presupuesto del sitio sí lo frena.
+    $sinTope = is_admin($user);
     $quota = tutor_quota_for($license);
-    if ($quota['license'] <= 0) {
+    if (!$sinTope && $quota['license'] <= 0) {
         return $no('Tu plan no incluye el tutor con avatar. Puedes añadirlo desde tu cuenta.', 'plan');
     }
 
@@ -100,13 +102,15 @@ function tutor_allowance(array $user, array $license): array
     }
     $tope = min($tope, $sitio);
 
-    $deLicencia = $quota['license'] * 60 - tutor_used_seconds((int) $license['id'], null, $period);
-    if ($deLicencia < TUTOR_MIN_START_SECONDS) {
-        return $no('La institución ya usó los minutos de tutor de este mes.', 'licencia');
+    if (!$sinTope) {
+        $deLicencia = $quota['license'] * 60 - tutor_used_seconds((int) $license['id'], null, $period);
+        if ($deLicencia < TUTOR_MIN_START_SECONDS) {
+            return $no('La institución ya usó los minutos de tutor de este mes.', 'licencia');
+        }
+        $tope = min($tope, $deLicencia);
     }
-    $tope = min($tope, $deLicencia);
 
-    if ($quota['member'] > 0) {
+    if (!$sinTope && $quota['member'] > 0) {
         $delDocente = $quota['member'] * 60 - tutor_used_seconds((int) $license['id'], (int) $user['id'], $period);
         if ($delDocente < TUTOR_MIN_START_SECONDS) {
             return $no('Ya usaste tus minutos de tutor de este mes.', 'docente');

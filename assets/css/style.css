@@ -552,3 +552,28 @@ textarea { resize: vertical; }
 .legal-table td { padding: 10px; border-bottom: 1px solid var(--line); color: var(--ink-2); vertical-align: top; }
 .legal-table code { background: var(--bg-soft); padding: 2px 7px; border-radius: 6px; font-size: .85rem; }
 @media (max-width: 560px) { .cookie-notice { padding: 14px 16px; } .cookie-actions { width: 100%; } }
+
+/* ------------------------------------------------- catálogo público y SEO */
+.skip-link {
+    position: absolute; left: -9999px; top: 0; z-index: 999;
+    background: var(--primary-700); color: #fff; padding: 10px 18px; border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+.crumbs { font-size: .85rem; color: var(--muted); margin-bottom: 18px; }
+.crumbs a { color: var(--primary-700); }
+.tool-hero { padding-top: 48px; }
+.tool-hero h1 { margin: 14px 0 10px; }
+.tool-icon-lg { width: 60px; height: 60px; border-radius: 18px; }
+.tools-grid-sm { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-top: 16px; }
+a.tool-card { text-decoration: none; color: inherit; display: block; }
+a.tool-card:hover { border-color: var(--primary); transform: translateY(-3px); }
+a.tool-card h3 { color: var(--ink); }
+.page-tools .section-head { text-align: left; }
+.page-tools .steps-list { margin: 0 0 28px; padding: 0; list-style: none; counter-reset: s; }
+
+/* Tarjetas de "para qué sirve" */
+.use-grid { display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.use-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+.use-card h3 { margin: 0 0 10px; font-size: 1.15rem; }
+.use-card p { color: var(--ink-2); margin: 0 0 12px; }
+.use-card .link-arrow { margin-right: 16px; white-space: nowrap; }

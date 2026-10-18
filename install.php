@@ -106,6 +106,18 @@ try {
             ADD COLUMN tutor_member_minutes INT UNSIGNED NOT NULL DEFAULT 0 AFTER tutor_minutes');
         $out[] = 'Cuotas y minutos agregados a la configuración de planes.';
     }
+    // Las filas de plan_settings guardadas antes de la fase 4 no traen cuotas ni minutos:
+    // se rellenan con los valores de config.php para que un plan editado no quede sin tutor.
+    foreach ($PLANS as $codigo => $planConfig) {
+        $st = $pdo->prepare('UPDATE plan_settings SET ai_monthly_quota = ?, ai_member_quota = ?,
+                   tutor_minutes = ?, tutor_member_minutes = ? WHERE code = ? AND ai_monthly_quota = 0');
+        $st->execute([(int) ($planConfig['ai_monthly_quota'] ?? 0), (int) ($planConfig['ai_member_quota'] ?? 0),
+                      (int) ($planConfig['tutor_minutes'] ?? 0), (int) ($planConfig['tutor_member_minutes'] ?? 0), $codigo]);
+        if ($st->rowCount() > 0) {
+            $out[] = 'Cuotas del plan "' . $codigo . '" completadas desde la configuración.';
+        }
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);
