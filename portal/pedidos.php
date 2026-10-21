@@ -45,6 +45,9 @@ include __DIR__ . '/_top.php';
                         <td><span class="badge badge-<?= e($cls) ?>"><?= e($lbl) ?></span></td>
                         <td><?= e($o['mp_payment_id'] ?: '—') ?><?php if ($o['payment_method']): ?><small class="block muted"><?= e(strtoupper($o['payment_method'])) ?></small><?php endif; ?></td>
                         <td class="row-actions">
+                            <?php if ($o['status'] === 'approved'): ?>
+                                <a class="btn btn-outline btn-sm" href="<?= e(url('portal/comprobante.php?id=' . $o['id'])) ?>">Comprobante</a>
+                            <?php endif; ?>
                             <?php if ($o['license_id']): ?>
                                 <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Ver licencia</a>
                             <?php elseif ($o['status'] === 'review'): ?>

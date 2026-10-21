@@ -182,9 +182,22 @@ function license_by_id(int $licenseId): ?array
  * Aprueba manualmente una orden (transferencia, pago por fuera, cortesía).
  * Reutiliza apply_payment para crear la licencia de forma idempotente.
  */
-function approve_order_manually(array $order, string $note = '', string $paymentReference = ''): ?array
+/**
+ * Confirma un pago verificado por el administrador.
+ *
+ * @param array $billing nombre y correo de quien pagó y el valor realmente recibido,
+ *                       que es lo que aparece en el comprobante del cliente
+ */
+function approve_order_manually(array $order, string $note = '', string $paymentReference = '', array $billing = []): ?array
 {
     $paymentReference = preg_replace('/[^\w\-]/', '', $paymentReference);
+    $nombre = mb_substr(trim((string) ($billing['name'] ?? '')), 0, 120);
+    $correo = mb_substr(trim((string) ($billing['email'] ?? '')), 0, 190);
+    $neto = (float) preg_replace('/[^\d.]/', '', (string) ($billing['net'] ?? '0'));
+    if ($nombre !== '' || $correo !== '' || $neto > 0) {
+        db_exec('UPDATE orders SET billing_name = ?, billing_email = ?, net_amount = ? WHERE id = ?',
+            [$nombre ?: null, $correo ?: null, $neto > 0 ? $neto : null, $order['id']]);
+    }
     return apply_payment([
         'id'                 => $paymentReference !== '' ? mb_substr($paymentReference, 0, 40) : 'MANUAL-' . date('ymdHis'),
         'status'             => 'approved',

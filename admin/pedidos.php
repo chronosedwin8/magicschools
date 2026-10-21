@@ -14,7 +14,12 @@ if (is_post()) {
             approve_order_manually(
                 $order,
                 trim((string) ($_POST['note'] ?? '')),
-                trim((string) ($_POST['payment_reference'] ?? ''))
+                trim((string) ($_POST['payment_reference'] ?? '')),
+                [
+                    'name'  => (string) ($_POST['billing_name'] ?? ''),
+                    'email' => (string) ($_POST['billing_email'] ?? ''),
+                    'net'   => preg_replace('/\D/', '', (string) ($_POST['net_amount'] ?? '')),
+                ]
             );
             flash('success', 'Pago confirmado: el pedido ' . $order['reference'] . ' quedó aprobado y la licencia está activa.');
         }
@@ -84,6 +89,9 @@ include __DIR__ . '/../portal/_top.php';
                     <td><span class="badge badge-<?= e($cls) ?>"><?= e($lbl) ?></span><?php if ($o['status_detail']): ?><small class="block muted"><?= e($o['status_detail']) ?></small><?php endif; ?></td>
                     <td><?= e($o['mp_payment_id'] ?: '—') ?><?php if ($o['payment_method']): ?><small class="block muted"><?= e(strtoupper($o['payment_method'])) ?></small><?php endif; ?></td>
                     <td class="row-actions">
+                        <?php if ($o['status'] === 'approved'): ?>
+                            <a class="btn btn-outline btn-sm" href="<?= e(url('portal/comprobante.php?id=' . $o['id'])) ?>" target="_blank" rel="noopener">Comprobante</a>
+                        <?php endif; ?>
                         <?php if ($o['license_id']): ?>
                             <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Licencia</a>
                         <?php endif; ?>
@@ -95,6 +103,11 @@ include __DIR__ . '/../portal/_top.php';
                                     <input type="hidden" name="action" value="approve">
                                     <p class="small">Verifica el pago en tu cuenta de <?= e(PAYMENT_PROVIDER) ?> y confírmalo aquí: se activa la licencia del cliente.</p>
                                     <label>Referencia del pago <span class="field-hint">(opcional)</span><input name="payment_reference" maxlength="40" placeholder="Ej. 123456789"></label>
+                                    <label>Valor recibido <span class="field-hint">(lo que llegó, ya sin la comisión)</span>
+                                        <input name="net_amount" inputmode="numeric" placeholder="Ej. 4.330.408"></label>
+                                    <label>Quién pagó <span class="field-hint">(si no es el titular)</span>
+                                        <input name="billing_name" maxlength="120" placeholder="Nombre y apellido"></label>
+                                    <label>Correo de quien pagó<input name="billing_email" type="email" maxlength="190"></label>
                                     <label>Nota interna<input name="note" maxlength="80" placeholder="Ej. transferencia, link de pago…"></label>
                                     <button class="btn btn-primary btn-sm btn-block">Confirmar y activar licencia</button>
                                 </form>

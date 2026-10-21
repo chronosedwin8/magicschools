@@ -29,6 +29,9 @@ CREATE TABLE IF NOT EXISTS orders (
     mp_payment_id       VARCHAR(40)  NULL,
     payment_url         VARCHAR(500) NULL,
     payment_method      VARCHAR(40)  NULL,
+    billing_name        VARCHAR(120) NULL,   -- quien pagó, si no es el titular de la cuenta
+    billing_email       VARCHAR(190) NULL,
+    net_amount          DECIMAL(14,2) NULL,  -- lo que llegó después de la comisión de la pasarela
     created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          DATETIME NULL,
     paid_at             DATETIME NULL,

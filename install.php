@@ -118,6 +118,17 @@ try {
         }
     }
 
+    // Migración: datos de facturación del comprobante de pago
+    $hasBilling = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'billing_name'")->fetchColumn();
+    if (!$hasBilling) {
+        $pdo->exec('ALTER TABLE orders
+            ADD COLUMN billing_name VARCHAR(120) NULL AFTER payment_method,
+            ADD COLUMN billing_email VARCHAR(190) NULL AFTER billing_name,
+            ADD COLUMN net_amount DECIMAL(14,2) NULL AFTER billing_email');
+        $out[] = 'Datos de facturación agregados a los pedidos.';
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);
