@@ -47,6 +47,9 @@ include __DIR__ . '/_top.php';
                         <td class="row-actions">
                             <?php if ($o['status'] === 'approved'): ?>
                                 <a class="btn btn-outline btn-sm" href="<?= e(url('portal/comprobante.php?id=' . $o['id'])) ?>">Comprobante</a>
+                                <?php if (invoice_for_order((int) $o['id'])): ?>
+                                    <a class="btn btn-outline btn-sm" href="<?= e(url('portal/factura.php?id=' . $o['id'])) ?>">Factura</a>
+                                <?php endif; ?>
                             <?php endif; ?>
                             <?php if ($o['license_id']): ?>
                                 <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Ver licencia</a>

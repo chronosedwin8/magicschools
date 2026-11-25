@@ -267,3 +267,52 @@ CREATE TABLE IF NOT EXISTS ai_assists (
     INDEX idx_assist_user (user_id, created_at),
     INDEX idx_assist_license (license_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ===========================================================================
+-- Facturación (España)
+-- Una factura es un documento inmutable: al emitirla se copian aquí todos los
+-- datos (vendedor, cliente, importes y textos legales) para que no cambien
+-- aunque después se edite la configuración o los datos del cliente.
+-- ===========================================================================
+CREATE TABLE IF NOT EXISTS invoice_series (
+    serie       VARCHAR(10) NOT NULL PRIMARY KEY,
+    last_number INT UNSIGNED NOT NULL DEFAULT 0,
+    updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS invoices (
+    id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    order_id        INT UNSIGNED NOT NULL UNIQUE,
+    serie           VARCHAR(10) NOT NULL,
+    numero          INT UNSIGNED NOT NULL,
+    numero_completo VARCHAR(30) NOT NULL UNIQUE,
+    issued_at       DATETIME NOT NULL,
+    operation_date  DATE NOT NULL,
+    order_reference VARCHAR(40) NOT NULL,
+    -- Expedidor
+    seller_name     VARCHAR(160) NOT NULL,
+    seller_tax_id   VARCHAR(30)  NOT NULL,
+    seller_address  VARCHAR(255) NOT NULL,
+    seller_registry VARCHAR(255) NULL,
+    seller_email    VARCHAR(190) NULL,
+    -- Destinatario
+    buyer_name      VARCHAR(160) NOT NULL,
+    buyer_tax_id    VARCHAR(40)  NULL,
+    buyer_address   VARCHAR(255) NULL,
+    buyer_country   VARCHAR(60)  NULL,
+    buyer_email     VARCHAR(190) NULL,
+    -- Operación
+    concept         VARCHAR(255) NOT NULL,
+    currency        CHAR(3) NOT NULL DEFAULT 'COP',
+    total           DECIMAL(14,2) NOT NULL,
+    tax_mode        ENUM('repercutido','no_sujeta','exenta') NOT NULL DEFAULT 'repercutido',
+    tax_rate        DECIMAL(5,2) NOT NULL DEFAULT 0,
+    tax_base        DECIMAL(14,2) NOT NULL,
+    tax_amount      DECIMAL(14,2) NOT NULL DEFAULT 0,
+    tax_note        VARCHAR(255) NULL,
+    legal_note      TEXT NULL,
+    created_by      INT UNSIGNED NULL,
+    created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_invoices_serie (serie, numero),
+    CONSTRAINT fk_invoice_order FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

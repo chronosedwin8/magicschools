@@ -91,6 +91,7 @@ include __DIR__ . '/../portal/_top.php';
                     <td class="row-actions">
                         <?php if ($o['status'] === 'approved'): ?>
                             <a class="btn btn-outline btn-sm" href="<?= e(url('portal/comprobante.php?id=' . $o['id'])) ?>" target="_blank" rel="noopener">Comprobante</a>
+                            <a class="btn btn-outline btn-sm" href="<?= e(url(invoice_for_order((int) $o['id']) ? 'portal/factura.php?id=' . $o['id'] : 'admin/facturacion.php')) ?>" target="_blank" rel="noopener"><?= invoice_for_order((int) $o['id']) ? 'Factura' : 'Facturar' ?></a>
                         <?php endif; ?>
                         <?php if ($o['license_id']): ?>
                             <a class="btn btn-outline btn-sm" href="<?= e(url('portal/licencia.php?id=' . $o['license_id'])) ?>">Licencia</a>

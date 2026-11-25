@@ -129,6 +129,14 @@ try {
         $out[] = 'Datos de facturación agregados a los pedidos.';
     }
 
+    // Migración: identificación fiscal de quien paga (va en la factura)
+    $hasTaxId = $pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'billing_tax_id'")->fetchColumn();
+    if (!$hasTaxId) {
+        $pdo->exec('ALTER TABLE orders ADD COLUMN billing_tax_id VARCHAR(40) NULL AFTER billing_email');
+        $out[] = 'Identificación fiscal agregada a los pedidos.';
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);

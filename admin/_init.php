@@ -13,6 +13,7 @@ $nav = [
     'licencias' => ['admin/licencias.php', '🎟️', 'Licencias'],
     'clientes'  => ['admin/clientes.php', '🏫', 'Clientes'],
     'precios'   => ['admin/precios.php', '💲', 'Precios y planes'],
+    'facturacion' => ['admin/facturacion.php', '🧾', 'Facturación'],
     'costos'    => ['admin/costos.php', '📈', 'Costos y margen'],
     'tutor'     => ['admin/tutor.php', '🎥', 'Tutor con avatar'],
     'contactos' => ['admin/contactos.php', '✉️', 'Solicitudes de contacto'],
