@@ -30,7 +30,14 @@ if (is_post()) {
             foreach ($campos as $clave => $valor) {
                 setting_save($clave, $valor, (int) $user['id']);
             }
-            app_log('facturacion', 'Ajustes de facturación guardados', ['admin' => $user['id']]);
+                if ((string) ($_POST['next_number'] ?? '') !== '') {
+                $error = invoice_set_next_number($campos['invoice_serie'], (int) $_POST['next_number']);
+                if ($error !== null) {
+                    flash('error', $error);
+                    redirect('admin/facturacion.php');
+                }
+            }
+        app_log('facturacion', 'Ajustes de facturación guardados', ['admin' => $user['id']]);
             flash('success', 'Datos de facturación guardados. Afectan a las próximas facturas, no a las ya emitidas.');
         } catch (Throwable $e) {
             app_log('facturacion', 'No se pudieron guardar los ajustes', ['error' => $e->getMessage()]);
@@ -201,6 +208,8 @@ include __DIR__ . '/../portal/_top.php';
         </div>
         <div class="form-row">
             <label>Serie<input name="serie" maxlength="10" required value="<?= e($cfg['serie']) ?>"></label>
+            <label>Próximo número <span class="field-hint">(para continuar la numeración de tu contabilidad)</span>
+                <input name="next_number" inputmode="numeric" value="<?= (int) invoice_next_number($cfg['serie']) ?>"></label>
             <label>Régimen por defecto
                 <select name="tax_mode">
                     <option value="repercutido" <?= $cfg['tax_mode'] === 'repercutido' ? 'selected' : '' ?>>IVA repercutido</option>

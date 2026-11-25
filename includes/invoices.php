@@ -175,6 +175,34 @@ function invoice_issue(array $order, array $datos, ?int $adminId = null): array
     return ['ok' => true, 'invoice' => invoice_for_order((int) $order['id'])];
 }
 
+/** Próximo número que se usará en la serie. */
+function invoice_next_number(string $serie): int
+{
+    $row = db_one('SELECT last_number FROM invoice_series WHERE serie = ?', [$serie]);
+    return (int) ($row['last_number'] ?? 0) + 1;
+}
+
+/**
+ * Fija el próximo número de la serie, para continuar la numeración que ya lleva
+ * la contabilidad de la empresa.
+ *
+ * @return ?string mensaje de error, o null si quedó fijado
+ */
+function invoice_set_next_number(string $serie, int $proximo): ?string
+{
+    if ($proximo < 1 || $proximo > 99999999) {
+        return 'El próximo número debe estar entre 1 y 99.999.999.';
+    }
+    $usado = db_one('SELECT MAX(numero) n FROM invoices WHERE serie = ?', [$serie]);
+    if ((int) ($usado['n'] ?? 0) >= $proximo) {
+        return 'En la serie ' . $serie . ' ya existe la factura n.º ' . (int) $usado['n']
+            . ': el próximo número debe ser mayor.';
+    }
+    db_exec('INSERT INTO invoice_series (serie, last_number) VALUES (?, ?)
+             ON DUPLICATE KEY UPDATE last_number = VALUES(last_number)', [$serie, $proximo - 1]);
+    return null;
+}
+
 /** Importe con dos decimales, como corresponde en una factura. */
 function invoice_money(float $amount, string $currency = ''): string
 {
