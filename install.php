@@ -137,6 +137,14 @@ try {
         $out[] = 'Identificación fiscal agregada a los pedidos.';
     }
 
+    // Migración: los ajustes guardan textos largos (pie legal de la factura)
+    $tipoValor = (string) $pdo->query("SELECT DATA_TYPE FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'app_settings' AND COLUMN_NAME = 'value'")->fetchColumn();
+    if ($tipoValor !== '' && strtolower($tipoValor) !== 'text') {
+        $pdo->exec('ALTER TABLE app_settings MODIFY value TEXT NOT NULL');
+        $out[] = 'Los ajustes ahora admiten textos largos.';
+    }
+
     // Cuenta de administrador: se crea si no existe; si existe, se promueve a admin
     // (la contraseña de una cuenta existente no se sobrescribe).
     $adminEmail = strtolower(ADMIN_EMAIL);

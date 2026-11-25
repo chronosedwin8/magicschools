@@ -26,11 +26,16 @@ if (is_post()) {
             'invoice_tax_note'        => mb_substr(trim(ai_normalize_text($_POST['tax_note'] ?? '')), 0, 255),
             'invoice_legal_note'      => mb_substr(trim(ai_normalize_text($_POST['legal_note'] ?? '')), 0, 2000),
         ];
-        foreach ($campos as $clave => $valor) {
-            setting_save($clave, $valor, (int) $user['id']);
+        try {
+            foreach ($campos as $clave => $valor) {
+                setting_save($clave, $valor, (int) $user['id']);
+            }
+            app_log('facturacion', 'Ajustes de facturación guardados', ['admin' => $user['id']]);
+            flash('success', 'Datos de facturación guardados. Afectan a las próximas facturas, no a las ya emitidas.');
+        } catch (Throwable $e) {
+            app_log('facturacion', 'No se pudieron guardar los ajustes', ['error' => $e->getMessage()]);
+            flash('error', 'No se pudieron guardar los datos de facturación. Revisa el registro de la aplicación.');
         }
-        app_log('facturacion', 'Ajustes de facturación guardados', ['admin' => $user['id']]);
-        flash('success', 'Datos de facturación guardados. Afectan a las próximas facturas, no a las ya emitidas.');
         redirect('admin/facturacion.php');
     }
 

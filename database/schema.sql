@@ -248,7 +248,7 @@ CREATE TABLE IF NOT EXISTS tutor_sessions (
 -- (interruptor del tutor, presupuesto mensual de minutos, etc.).
 CREATE TABLE IF NOT EXISTS app_settings (
     name       VARCHAR(60) NOT NULL PRIMARY KEY,
-    value      VARCHAR(255) NOT NULL,
+    value      TEXT NOT NULL,          -- hay ajustes largos, como el texto legal de la factura
     updated_by INT UNSIGNED NULL,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
